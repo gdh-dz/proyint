@@ -64,7 +64,7 @@ export default function TabLayout() {
         options={{
           title: 'Ajustes',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'menu' : 'menu-outline'} color={color} />
+            <TabBarIcon name={focused ? 'settings' : 'settings-outline'} color={color} />
           ),
         }}
       />
@@ -73,7 +73,7 @@ export default function TabLayout() {
         options={{
           title: 'Mis Productos',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'menu' : 'menu-outline'} color={color} />
+            <TabBarIcon name={focused ? 'cart' : 'cart-outline'} color={color} />
           ),
         }}
       />
