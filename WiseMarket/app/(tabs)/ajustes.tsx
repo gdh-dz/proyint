@@ -16,7 +16,7 @@ const ProfileScreen: React.FC = () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permissionResult.granted) {
-      alert("WiseMarket necesita permiso para acceder galería");
+      alert("WiseMarket necesita permiso para acceder a la galería");
       return;
     }
 
@@ -27,8 +27,8 @@ const ProfileScreen: React.FC = () => {
       quality: 1,
     });
 
-    if (!result.cancelled) {
-      setProfileImage(result.uri);
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setProfileImage(result.assets[0].uri); // Updated to use assets
     }
   };
 
