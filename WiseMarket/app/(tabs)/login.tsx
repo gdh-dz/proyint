@@ -2,10 +2,11 @@
 import { createUser } from "@/services/userservices";
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, Alert, StyleSheet, Image, TouchableOpacity, Dimensions } from "react-native";
-
+import { useNavigation } from '@react-navigation/native';
 const { width } = Dimensions.get("window"); // Obtener el ancho de la ventana
 
 export default function SignupScreen() {
+  const navigation = useNavigation();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [name, setName] = useState<string>("");
@@ -28,6 +29,7 @@ export default function SignupScreen() {
     } finally {
       setLoading(false);
     }
+   //navigation.navigate('');
   };
 
   return (
