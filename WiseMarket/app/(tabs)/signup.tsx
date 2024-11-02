@@ -1,7 +1,9 @@
 // WiseMarket/app/(tabs)/signup.tsx
 import { createUser } from "@/services/userservices";
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Button, Alert, StyleSheet, Image, TouchableOpacity, Dimensions } from "react-native";
+
+const { width } = Dimensions.get("window"); // Obtener el ancho de la ventana
 
 export default function SignupScreen() {
   const [email, setEmail] = useState<string>("");
@@ -37,9 +39,9 @@ export default function SignupScreen() {
       />
       <View style={styles.outerFrame}>
         <TouchableOpacity style={styles.switchButton}>
-          <Text style={styles.switchButtonText}>Log In / Sign Up</Text>
+          <Text style={styles.switchButtonText}>Log In</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>¡Bienvenido!</Text>
+        <Text style={styles.title}>Register</Text>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
@@ -70,7 +72,7 @@ export default function SignupScreen() {
             secureTextEntry
           />
         </View>
-        <Button title={loading ? "Registering..." : "Registrar"} onPress={handleRegister} disabled={loading} />
+        <Button title={loading ? "Registering..." : "Register"} onPress={handleRegister} disabled={loading} />
       </View>
     </View>
   );
@@ -92,18 +94,16 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     opacity: 1,
-
   },
   outerFrame: {
-    // margin: 0,
-    paddingVertical: 25,  // Padding de 100 px arriba y abajo
-    paddingHorizontal: 75,
-  
-    backgroundColor: "rgba(37, 104, 71, .9)", // Fondo ligero para visibilidad
+    paddingVertical: 25,
+    paddingHorizontal: 20, // Reducido para mayor control del tamaño
+    backgroundColor: "rgba(37, 104, 71, .9)",
     borderRadius: 20,
     alignItems: "center",
-},
-
+    width: width * 0.8, // Usa un porcentaje del ancho de la pantalla
+    maxWidth: 400, // Limita el ancho máximo para pantallas más grandes
+  },
   switchButton: {
     height: 40,
     justifyContent: "center",
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   switchButtonText: {
     fontSize: 16,
     color: "#5F7F1E",
-    padding: 10
+    padding: 10,
   },
   title: {
     fontSize: 24,
@@ -126,22 +126,16 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: '100%',
-    marginBottom: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-
-
+    marginBottom: 50,
   },
   input: {
     height: 50,
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 10,
-    paddingHorizontal: 10, // Cambié a 10 para más espacio interno
+    paddingHorizontal: 20,
     marginBottom: 16,
     backgroundColor: "#fff",
-    width: '100%', // Establece el ancho al 100% del contenedor
-},
-
+    width: '100%', // Asegúrate de que el input ocupe el 100% del inputContainer
+  },
 });
-
