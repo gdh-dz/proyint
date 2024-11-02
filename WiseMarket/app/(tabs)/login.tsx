@@ -1,4 +1,4 @@
-// WiseMarket/app/(tabs)/signup.tsx
+// WiseMarket/app/(tabs)/login.tsx
 import { createUser } from "@/services/userservices";
 import React, { useState } from "react";
 import { View, Text, TextInput, Alert, StyleSheet, Image, TouchableOpacity } from "react-native";
