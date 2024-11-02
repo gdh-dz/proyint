@@ -1,7 +1,7 @@
 // WiseMarket/app/(tabs)/signup.tsx
 import { createUser } from "@/services/userservices";
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert, StyleSheet, Image } from "react-native";
+import { View, Text, TextInput, Button, Alert, StyleSheet, Image, TouchableOpacity } from "react-native";
 
 export default function SignupScreen() {
   const [email, setEmail] = useState<string>("");
@@ -15,7 +15,7 @@ export default function SignupScreen() {
       Alert.alert("Error", "All fields are required.");
       return;
     }
-    
+
     setLoading(true);
     try {
       const user = await createUser(email, password, name, phone);
@@ -33,39 +33,44 @@ export default function SignupScreen() {
       <Image
         source={require('@/assets/images/SignUp3.png')} // Verifica que la ruta sea correcta
         style={styles.backgroundImage}
-        resizeMode="cover" // Asegura que la imagen cubra todo el contenedor
+        resizeMode="cover"
       />
-      <View style={styles.overlay}>
-        <Text style={styles.title}>Register</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Name"
-          value={name}
-          onChangeText={setName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Phone"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-        <Button title={loading ? "Registering..." : "Register"} onPress={handleRegister} disabled={loading} />
+      <View style={styles.outerFrame}>
+        <TouchableOpacity style={styles.switchButton}>
+          <Text style={styles.switchButtonText}>Log In / Sign Up</Text>
+        </TouchableOpacity>
+        <Text style={styles.title}>¡Bienvenido!</Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Name"
+            value={name}
+            onChangeText={setName}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Phone"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
+        </View>
+        <Button title={loading ? "Registering..." : "Registrar"} onPress={handleRegister} disabled={loading} />
       </View>
     </View>
   );
@@ -75,8 +80,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center", // Alinear el contenido en el centro horizontalmente
-    backgroundColor: "transparent", // Cambia a transparente para que se vea la imagen de fondo
+    alignItems: "center",
+    backgroundColor: "transparent",
   },
   backgroundImage: {
     position: "absolute",
@@ -86,28 +91,57 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: "100%",
     height: "100%",
-    opacity: 1, // Ajusta la opacidad según sea necesario
+    opacity: 1,
+
   },
-  overlay: {
-    flex: 1,
+  outerFrame: {
+    // margin: 0,
+    paddingVertical: 25,  // Padding de 100 px arriba y abajo
+    paddingHorizontal: 75,
+  
+    backgroundColor: "rgba(37, 104, 71, .9)", // Fondo ligero para visibilidad
+    borderRadius: 20,
+    alignItems: "center",
+},
+
+  switchButton: {
+    height: 40,
     justifyContent: "center",
-    paddingHorizontal: 20,
-    zIndex: 1, // Asegúrate de que el contenido esté por encima de la imagen
-    width: '100%', // Asegura que el contenedor ocupe todo el ancho
+    alignItems: "center",
+    borderRadius: 20,
+    backgroundColor: "#FFF",
+    marginBottom: 41,
+  },
+  switchButtonText: {
+    fontSize: 16,
+    color: "#5F7F1E",
+    padding: 10
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: "regular",
     textAlign: "center",
-    marginBottom: 20,
-    color: "#000", // Asegúrate de que el texto sea visible
+    marginBottom: 41,
+    color: "#FFFF",
+  },
+  inputContainer: {
+    width: '100%',
+    marginBottom: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+
+
   },
   input: {
     height: 50,
     borderColor: "#ccc",
     borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 15,
-  },
+    borderRadius: 10,
+    paddingHorizontal: 10, // Cambié a 10 para más espacio interno
+    marginBottom: 16,
+    backgroundColor: "#fff",
+    width: '100%', // Establece el ancho al 100% del contenedor
+},
+
 });
+
