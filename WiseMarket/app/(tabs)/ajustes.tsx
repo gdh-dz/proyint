@@ -1,15 +1,36 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-
+import * as ImagePicker from 'expo-image-picker';
 
 const ProfileScreen: React.FC = () => {
   const [name, setName] = React.useState<string>('');
   const [email, setEmail] = React.useState<string>('');
   const [phone, setPhone] = React.useState<string>('');
+  const [profileImage, setProfileImage] = React.useState<string | null>(null);
 
   const [validName, setValidName] = React.useState<Boolean>(true);
   const [validEmail, setValidEmail] = React.useState<Boolean>(true);
   const [validPhone, setValidPhone] = React.useState<Boolean>(true);
+
+  const pickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      alert("Permission required. We need permission to access your photos.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      setProfileImage(result.uri);
+    }
+  };
 
   const saveData = () => {
     if (!name || !email || !phone) {
@@ -21,7 +42,6 @@ const ProfileScreen: React.FC = () => {
       } else {
         alert('Datos incorrectos')
       }
-
     }
   };
 
@@ -30,7 +50,6 @@ const ProfileScreen: React.FC = () => {
       setValidName(false);
     } else {
       setValidName(true);
-      
     }
 
     if(email.indexOf('@') < 0) {
@@ -51,10 +70,12 @@ const ProfileScreen: React.FC = () => {
       <Text style={styles.title}>Edita tu perfil</Text>
 
       {/* Profile Image */}
-      <Image
-        source={{ uri: 'https://via.placeholder.com/100' }}
-        style={styles.profileImage}
-      />
+      <TouchableOpacity onPress={pickImage}>
+        <Image
+          source={{ uri: profileImage || 'https://via.placeholder.com/100' }}
+          style={styles.profileImage}
+        />
+      </TouchableOpacity>
 
       {/* Name Field */}
       <Text style={styles.label}>Nombre</Text>
@@ -75,7 +96,7 @@ const ProfileScreen: React.FC = () => {
         placeholder="correo@gmail.com"
       />
       <TouchableOpacity>
-        <Text style={styles.changePasswordText}>cambiar contraseña</Text>
+        <Text style={styles.changePasswordText}>Cambiar contraseña</Text>
       </TouchableOpacity>
 
       {/* Phone Field */}
