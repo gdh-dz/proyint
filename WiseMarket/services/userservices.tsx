@@ -31,3 +31,7 @@ export async function createUser(email: string, password: string, name: string, 
     throw new Error(`Error creating user: ${error}`); // Lanza un error más específico
   }
 }
+//GetListsByUserID
+//LogOut
+//SignIn
+
