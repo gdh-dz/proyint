@@ -3,12 +3,13 @@ import { User } from "@/models/User";
 import { getAuth, createUserWithEmailAndPassword, UserCredential } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 import {app} from "../firebaseConfig"; // Asegúrate de ajustar la ruta
+import { Float } from "react-native/Libraries/Types/CodegenTypes";
 
 // Inicializa Firebase Authentication y Firestore usando la instancia de la app
 const auth = getAuth(app); // Usa la instancia de Firebase App
 const firestore = getFirestore(app); // Usa la instancia de Firebase App
 
-export async function createUser(email: string, password: string, name: string): Promise<{ uid: string; email: string; name: string }> {
+export async function createUser(email: string, password: string, name: string, phone: string): Promise<{ uid: string; email: string; name: string }> {
   try {
     // Crear usuario en Firebase Authentication
     const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
