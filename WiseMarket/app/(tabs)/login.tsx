@@ -1,28 +1,30 @@
 // WiseMarket/app/(tabs)/login.tsx
-import { createUser } from "@/services/userservices";
+import { loginUser } from "@/services/userservices";
 import React, { useState } from "react";
 import { View, Text, TextInput, Alert, StyleSheet, Image, TouchableOpacity } from "react-native";
 
-export default function SignupScreen() {
+export default function LoginScreen() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [name, setName] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleRegister = async () => {
-    if (!email || !password || !name || !phone) {
-      Alert.alert("Error", "All fields are required.");
+  const handleLogin = async () => {
+    if (!email && !phone) {
+      Alert.alert("Error", "Por favor, ingresa tu correo o teléfono.");
+      return;
+    }
+    if (!password) {
+      Alert.alert("Error", "La contraseña es requerida.");
       return;
     }
 
     setLoading(true);
     try {
-      const user = await createUser(email, password, name, phone);
-      Alert.alert("Success", `User ${user.name} created successfully!`);
+      const user = await loginUser(email || phone, password); // Cambia a tu servicio de login
     } catch (error) {
-      Alert.alert("Error", "Failed to create user. Please try again.");
-      console.error("Error creating user:", error);
+      Alert.alert("Error", "No se pudo iniciar sesión. Inténtalo de nuevo.");
+      console.error("Error en el inicio de sesión:", error);
     } finally {
       setLoading(false);
     }
@@ -31,7 +33,7 @@ export default function SignupScreen() {
   return (
     <View style={styles.container}>
       <Image
-        source={require('@/assets/images/SignUp3.png')} // Verifica que la ruta sea correcta
+        source={require('@/assets/images/SignUp3.png')}
         style={styles.backgroundImage}
         resizeMode="cover"
       />
@@ -48,22 +50,16 @@ export default function SignupScreen() {
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
-            placeholderTextColor="#A8A8A8" // Cambia el color del placeholder aquí
+            placeholderTextColor="#A8A8A8"
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Nombre"
-            value={name}
-            onChangeText={setName}
-            placeholderTextColor="#A8A8A8" // Cambia el color del placeholder aquí
-          />
+          <Text style={styles.orText}>ó</Text>
           <TextInput
             style={styles.input}
             placeholder="Teléfono"
             value={phone}
             onChangeText={setPhone}
             keyboardType="phone-pad"
-            placeholderTextColor="#A8A8A8" // Cambia el color del placeholder aquí
+            placeholderTextColor="#A8A8A8"
           />
           <TextInput
             style={styles.input}
@@ -71,16 +67,16 @@ export default function SignupScreen() {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
-            placeholderTextColor="#A8A8A8" // Cambia el color del placeholder aquí
+            placeholderTextColor="#A8A8A8"
           />
         </View>
         <TouchableOpacity
-          style={[styles.registerButton, { opacity: loading ? 0.6 : 1 }]}
-          onPress={loading ? undefined : handleRegister}
-          disabled={loading} // Deshabilita el botón mientras se registra
+          style={[styles.loginButton, { opacity: loading ? 0.6 : 1 }]}
+          onPress={loading ? undefined : handleLogin}
+          disabled={loading}
         >
-          <Text style={styles.registerButtonText}>
-            {loading ? "Registrando..." : "Registrar"}
+          <Text style={styles.loginButtonText}>
+            {loading ? "Iniciando sesión..." : "Iniciar sesión"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -105,15 +101,14 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   outerFrame: {
-    width: '85%', // Cambia de '90%' a '85%' para reducir el ancho
-    maxWidth: 310, // Reduce aún más el ancho máximo si es necesario
+    width: '85%',
+    maxWidth: 310,
     paddingVertical: 25,
     paddingHorizontal: 15,
     backgroundColor: "rgba(37, 104, 71, .9)",
     borderRadius: 20,
     alignItems: "center",
   },
-  
   switchButton: {
     height: 40,
     justifyContent: "center",
@@ -125,11 +120,11 @@ const styles = StyleSheet.create({
   },
   switchButtonText: {
     fontSize: 16,
-    color: "#ffff",
+    color: "#FFFF",
   },
   title: {
     fontSize: 24,
-    fontWeight: "400", // Asegúrate de usar "400" o "normal"
+    fontWeight: "400",
     textAlign: "center",
     marginBottom: 41,
     color: "#FFFF",
@@ -144,18 +139,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 15,
-    marginBottom: 16,
+    marginBottom: 10,
     backgroundColor: "#fff",
-    fontSize: 16, // Asegúrate de que el tamaño de la fuente no sea muy pequeño
+    fontSize: 16,
   },
-  registerButton: {
+  orText: {
+    textAlign: "center",
+    color: "#FFFFFF",
+    fontSize: 16,
+    marginVertical: 5,
+  },
+  loginButton: {
     borderRadius: 20,
     backgroundColor: '#5F7F1E',
     paddingVertical: 10,
     paddingHorizontal: 15,
     alignItems: 'center',
   },
-  registerButtonText: {
+  loginButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: 'medium',
