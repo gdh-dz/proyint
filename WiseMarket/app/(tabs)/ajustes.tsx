@@ -16,7 +16,7 @@ const ProfileScreen: React.FC = () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permissionResult.granted) {
-      alert("Permission required. We need permission to access your photos.");
+      alert("WiseMarket necesita permiso para acceder galería");
       return;
     }
 
