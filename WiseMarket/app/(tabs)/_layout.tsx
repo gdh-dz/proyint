@@ -33,18 +33,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="signup"
+        name="login"
         options={{
-          title: 'SignUp',
+          title: 'login',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'link' : 'link-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="userscreen"
+        name="signup"
         options={{
-          title: 'UserScreen',
+          title: 'signup',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
           ),

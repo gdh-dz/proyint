@@ -105,14 +105,15 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   outerFrame: {
-    width: '90%',
-    maxWidth: 400,
+    width: '85%', // Cambia de '90%' a '85%' para reducir el ancho
+    maxWidth: 310, // Reduce aún más el ancho máximo si es necesario
     paddingVertical: 25,
     paddingHorizontal: 15,
     backgroundColor: "rgba(37, 104, 71, .9)",
     borderRadius: 20,
     alignItems: "center",
   },
+  
   switchButton: {
     height: 40,
     justifyContent: "center",
