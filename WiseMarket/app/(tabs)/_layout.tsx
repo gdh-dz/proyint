@@ -42,16 +42,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="userscreen"
+        name="login"
         options={{
-          title: 'UserScreen',
+          title: 'LogIn',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
           ),
         }}
       />
       
-
       <Tabs.Screen
               name="new-list"
               options={{
