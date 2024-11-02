@@ -1,13 +1,12 @@
 // services/userService.ts
 import { User } from "@/models/User";
 import { getAuth, createUserWithEmailAndPassword, UserCredential } from "firebase/auth";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
-import {app} from "../firebaseConfig"; // Asegúrate de ajustar la ruta
+import { setDoc, doc } from "firebase/firestore";
+import {app, db} from "../firebaseConfig"; // Asegúrate de ajustar la ruta
 import { Float } from "react-native/Libraries/Types/CodegenTypes";
 
 // Inicializa Firebase Authentication y Firestore usando la instancia de la app
 const auth = getAuth(app); // Usa la instancia de Firebase App
-const firestore = getFirestore(app); // Usa la instancia de Firebase App
 
 export async function createUser(email: string, password: string, name: string, phone: string): Promise<{ uid: string; email: string; name: string }> {
   try {
@@ -18,7 +17,7 @@ export async function createUser(email: string, password: string, name: string, 
     // Crear instancia de usuario y subir a Firestore}
     try{
     const newUser = new User(email, name);
-    const userDocRef = doc(firestore, "users", uid);
+    const userDocRef = doc(db, "users", uid);
     await setDoc(userDocRef, newUser.toFirestore());
     }catch(error){
         throw new Error(`Error registering user: ${error}`); // Lanza un error más específico
@@ -31,7 +30,3 @@ export async function createUser(email: string, password: string, name: string, 
     throw new Error(`Error creating user: ${error}`); // Lanza un error más específico
   }
 }
-//GetListsByUserID
-//LogOut
-//SignIn
-
