@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { Alert, Image, Modal, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const CrearNuevaLista = () => {
   const [nombreLista, setNombreLista] = useState('');
   const [isShared, setIsShared] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [presupuesto, setPresupuesto] = useState('');
+  const [selectedIcon, setSelectedIcon] = useState(0);
+
 
   const toggleSwitch = () => setIsShared(previousState => !previousState);
 
@@ -44,9 +49,68 @@ const CrearNuevaLista = () => {
         <Text style={styles.addButtonText}>Nuevo producto</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.nextButton}>
+      <TouchableOpacity style={styles.nextButton}
+        onPress={() => setModalVisible(true)}>
         <Text style={styles.nextButtonText}>Siguiente</Text>
       </TouchableOpacity>
+
+      {/* Start Modal View*/}
+      <SafeAreaProvider>
+        <SafeAreaView>
+          <Modal
+            animationType='slide'
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => {
+              Alert.alert('Modal has been closed.');
+              setModalVisible(!modalVisible);
+          }}>
+            <View style={styles.centeredView}>
+              <View style={styles.modalView}>
+
+                <View style={styles.container}>
+                  <TouchableOpacity style={styles.backButton}>
+                    <Text style={styles.backText}
+                      onPress={() => {setModalVisible(!modalVisible)}}
+                    >{"X"}</Text>
+                  </TouchableOpacity>
+
+                  <Text style={styles.label}>Escoge icono</Text>
+                  <ScrollView horizontal contentContainerStyle={styles.iconContainer}>
+                    {[...Array(6)].map((_, index) => (
+                      <TouchableOpacity 
+                        key={index} 
+                        style={[
+                          styles.iconButton, 
+                          selectedIcon === index && styles.iconButtonSelected
+                        ]}
+                        onPress={() => setSelectedIcon(index)}
+                      >
+                        <Text style={styles.iconText}>Lista {index + 1}</Text>
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                  
+                  <Text style={styles.label}>Selecciona el presupuesto de la lista:</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="$"
+                    keyboardType="numeric"
+                    value={presupuesto}
+                    onChangeText={setPresupuesto}
+                  />
+
+                  <TouchableOpacity style={styles.createButton}>
+                    <Text style={styles.createButtonText}>Crear lista</Text>
+                  </TouchableOpacity>
+                </View>
+
+              </View>
+            </View>
+          </Modal>
+        </SafeAreaView>
+      </SafeAreaProvider>
+      {/* End Modal View */}
     </View>
   );
 };
@@ -125,6 +189,57 @@ const styles = StyleSheet.create({
     backgroundColor: '#4CAF50',
   },
   nextButtonText: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'gray',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    color: 'red',
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    marginBottom: 20,
+  },
+  backText: {
+    fontSize: 24,
+    color: '#4CAF50',
+  },
+  iconButton: {
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#4CAF50',
+    marginHorizontal: 5,
+  },
+  iconButtonSelected: {
+    backgroundColor: '#3e8e41',
+  },
+  iconText: {
+    fontSize: 16,
+    color: '#fff',
+  },
+  createButton: {
+    alignItems: 'center',
+    padding: 15,
+    borderRadius: 8,
+    backgroundColor: '#4CAF50',
+    marginTop: 20,
+  },
+  createButtonText: {
     fontSize: 16,
     color: '#fff',
     fontWeight: 'bold',
