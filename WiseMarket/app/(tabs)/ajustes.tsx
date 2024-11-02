@@ -1,10 +1,50 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
+
 const ProfileScreen: React.FC = () => {
-  const [name, setName] = React.useState<string>('Nombre Apellidos');
-  const [email, setEmail] = React.useState<string>('correo@gmail.com');
-  const [phone, setPhone] = React.useState<string>('+52 00 0000 0000');
+  const [name, setName] = React.useState<string>('');
+  const [email, setEmail] = React.useState<string>('');
+  const [phone, setPhone] = React.useState<string>('');
+
+  const [validName, setValidName] = React.useState<Boolean>(true);
+  const [validEmail, setValidEmail] = React.useState<Boolean>(true);
+  const [validPhone, setValidPhone] = React.useState<Boolean>(true);
+
+  const saveData = () => {
+    if (!name || !email || !phone) {
+      alert('Faltan datos');
+    } else {
+
+      if(validName && validEmail && validPhone) {
+        alert('Guardando...')
+      } else {
+        alert('Datos incorrectos')
+      }
+
+    }
+  };
+
+  React.useEffect(() => {
+    if (name.length < 10) {
+      setValidName(false);
+    } else {
+      setValidName(true);
+      
+    }
+
+    if(email.indexOf('@') < 0) {
+      setValidEmail(false);
+    } else {
+      setValidEmail(true);
+    }
+
+    if(phone.length !== 10) {
+      setValidPhone(false);
+    } else {
+      setValidPhone(true);
+    }
+  }, [name, email, phone]);
 
   return (
     <View style={styles.container}>
@@ -19,7 +59,7 @@ const ProfileScreen: React.FC = () => {
       {/* Name Field */}
       <Text style={styles.label}>Nombre</Text>
       <TextInput
-        style={styles.input}
+        style={validName? styles.input : styles.inputError}
         value={name}
         onChangeText={setName}
         placeholder="Nombre Apellidos"
@@ -28,7 +68,7 @@ const ProfileScreen: React.FC = () => {
       {/* Email Field */}
       <Text style={styles.label}>Correo electrónico</Text>
       <TextInput
-        style={styles.input}
+        style={validEmail? styles.input : styles.inputError}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -41,7 +81,7 @@ const ProfileScreen: React.FC = () => {
       {/* Phone Field */}
       <Text style={styles.label}>Teléfono</Text>
       <TextInput
-        style={styles.input}
+        style={validPhone? styles.input : styles.inputError}
         value={phone}
         onChangeText={setPhone}
         keyboardType="phone-pad"
@@ -49,7 +89,7 @@ const ProfileScreen: React.FC = () => {
       />
 
       {/* Save Button */}
-      <TouchableOpacity style={styles.saveButton}>
+      <TouchableOpacity style={styles.saveButton} onPress={saveData}>
         <Text style={styles.saveButtonText}>Guardar información</Text>
       </TouchableOpacity>
     </View>
@@ -88,6 +128,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
     color: '#000',
+  },
+  inputError: {
+    height: 40,
+    borderBottomWidth: 1,
+    borderBottomColor: 'darkred',
+    fontSize: 16,
+    marginBottom: 10,
+    color: 'darkred',
   },
   changePasswordText: {
     fontSize: 14,
