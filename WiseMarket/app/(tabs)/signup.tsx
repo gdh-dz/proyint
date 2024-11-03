@@ -39,13 +39,13 @@ export default function SignupScreen() {
       />
       <View style={styles.outerFrame}>
         <TouchableOpacity style={styles.switchButton}>
-          <Text style={styles.switchButtonText}>Log In</Text>
+          <Text style={styles.switchButtonText}>Sign Up</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Register</Text>
+        <Text style={styles.title}>Registrar</Text>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
-            placeholder="Email"
+            placeholder="Correo"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -53,26 +53,26 @@ export default function SignupScreen() {
           />
           <TextInput
             style={styles.input}
-            placeholder="Name"
+            placeholder="Nombre"
             value={name}
             onChangeText={setName}
           />
           <TextInput
             style={styles.input}
-            placeholder="Phone"
+            placeholder="Teléfono"
             value={phone}
             onChangeText={setPhone}
             keyboardType="phone-pad"
           />
           <TextInput
             style={styles.input}
-            placeholder="Password"
+            placeholder="Contraseña"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
           />
         </View>
-        <Button title={loading ? "Registering..." : "Register"} onPress={handleRegister} disabled={loading} />
+        <Button title={loading ? "Registrando..." : "Registro"} onPress={handleRegister} disabled={loading} />
       </View>
     </View>
   );
