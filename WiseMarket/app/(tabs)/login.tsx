@@ -38,11 +38,9 @@ export default function LoginScreen() {
         resizeMode="cover"
       />
       <View style={styles.outerFrame}>
-        <View style={styles.switchButton}>
-        <TouchableOpacity style={styles.buttonBox}>
-          <Text style={styles.switchButtonText}>Log In</Text>
+        <TouchableOpacity style={styles.switchButton}>
+          <Text style={styles.switchButtonText}>Log In / Sign Up</Text>
         </TouchableOpacity>
-        </View>
         <Text style={styles.title}>¡Bienvenido!</Text>
         <View style={styles.inputContainer}>
           <TextInput
@@ -52,6 +50,7 @@ export default function LoginScreen() {
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
+            placeholderTextColor="#A8A8A8"
           />
           <TextInput
             style={styles.input}
@@ -59,9 +58,18 @@ export default function LoginScreen() {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            placeholderTextColor="#A8A8A8"
           />
         </View>
-        <Button title={loading ? "Logging in..." : "Log In"} onPress={handleLogin} disabled={loading} />
+        <TouchableOpacity
+          style={[styles.registerButton, { opacity: loading ? 0.6 : 1 }]}
+          onPress={loading ? undefined : handleLogin}
+          disabled={loading} // Deshabilita el botón mientras se registra
+        >
+          <Text style={styles.registerButtonText}>
+            {loading ? "Logging in" : "Log in"}
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -83,6 +91,13 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     opacity: 1,
+  },
+  registerButton: {
+    borderRadius: 20,
+    backgroundColor: '#5F7F1E',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    alignItems: 'center',
   },
   outerFrame: {
     paddingVertical: 25,
@@ -117,18 +132,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 20,
-    backgroundColor: "#FFF",
+    backgroundColor: "#5F7F1E",
+    paddingHorizontal: 15,
     marginBottom: 41,
   },
   switchButtonText: {
     fontSize: 16,
-    color: "#FFF",
-    padding: 10,
-    width: 80, 
-    height: 40,
-    position: 'absolute',
-    borderRadius: 20,
-    backgroundColor: '#5F7F1E', 
+    color: "#ffff",
   },
   title: {
     fontSize: 24,
@@ -150,6 +160,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     backgroundColor: "#fff",
     width: '100%',
+  },
+  registerButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'medium',
   },
   
 });
