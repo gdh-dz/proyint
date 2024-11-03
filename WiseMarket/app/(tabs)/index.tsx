@@ -80,16 +80,15 @@ const styles = StyleSheet.create({
   searchFrame: {
     width: '100%',
     backgroundColor: '#256847', // Color verde para el frame de búsqueda
-    paddingVertical: 25, // Espacio arriba y abajo de la searchBar
+    paddingVertical: 20, // Espacio arriba y abajo de la searchBar
     alignItems: 'center',
     justifyContent: 'center',
   },
   listsContainer: {
     flex: 1,
     backgroundColor: '#fff', // Fondo blanco para el contenedor de listas
-    paddingVertical: 90, // Espacio vertical para el contenedor de listas
+    paddingVertical: 10, // Espacio vertical para el contenedor de listas
     alignItems: 'center', // Centrar contenido horizontalmente
-    
   },
   searchBar: {
     width: width * 0.9, // 90% del ancho de la pantalla
@@ -112,9 +111,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
     gap: 10,
-    marginBottom: 5, // Ajusta el margen inferior para mayor separación
-},
-
+    marginBottom: 20, // Aumentar el margen inferior para mayor separación
+  },
   tagContainer: {
     borderRadius: 20,
     overflow: 'hidden', // Asegura que el borde redondeado se aplique correctamente
@@ -124,7 +122,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 15,
     color: '#FFF',
-    fontWeight: '500', // Cambiar a '500' para consistencia
+    fontWeight: 'medium', // Cambiar a '500' para consistencia
     textAlign: 'center',
   },
   carouselContainer: {
@@ -148,14 +146,13 @@ const styles = StyleSheet.create({
   },
   createListButton: {
     backgroundColor: '#fff', // Fondo blanco para el botón
-    paddingVertical: 10, // Mantén un padding vertical fijo
+    paddingVertical: 100,
     paddingHorizontal: 20,
     borderRadius: 20,
-    marginTop: 10, // Aumenta el marginTop si es necesario
+    marginTop: 5, // Acercar el botón a las listas
     alignItems: 'center',
     justifyContent: 'center',
-},
-
+  },
   createListButtonText: {
     color: '#256847', // Texto verde
     fontFamily: 'Manrope',
