@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, Dimensions, SafeAreaView, StatusBar } from 'react-native';
+import { View, Text, TextInput, StyleSheet, FlatList, Dimensions, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -61,6 +61,11 @@ const HomeScreen: React.FC = () => {
               />
             </View>
           </View>
+
+          {/* Botón "Crear lista" */}
+          <TouchableOpacity style={styles.createListButton}>
+            <Text style={styles.createListButtonText}>Crear lista</Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </>
@@ -70,20 +75,21 @@ const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#256847', // Fondo blanco para toda la pantalla
+    backgroundColor: '#256847', // Fondo verde para toda la pantalla
   },
   searchFrame: {
     width: '100%',
     backgroundColor: '#256847', // Color verde para el frame de búsqueda
-    paddingVertical: 20, // Espacio arriba y abajo de la searchBar
+    paddingVertical: 25, // Espacio arriba y abajo de la searchBar
     alignItems: 'center',
     justifyContent: 'center',
   },
   listsContainer: {
     flex: 1,
-    backgroundColor: '#fff', // Fondo verde para el contenedor de listas
-    paddingVertical: 10, // Espacio vertical para el contenedor de listas
+    backgroundColor: '#fff', // Fondo blanco para el contenedor de listas
+    paddingVertical: 90, // Espacio vertical para el contenedor de listas
     alignItems: 'center', // Centrar contenido horizontalmente
+    
   },
   searchBar: {
     width: width * 0.9, // 90% del ancho de la pantalla
@@ -95,8 +101,8 @@ const styles = StyleSheet.create({
   },
   listSectionsContainer: {
     flex: 1,
-    justifyContent: 'center', // Centra verticalmente las secciones de listas
-    alignItems: 'center',
+    justifyContent: 'flex-start', // Alinear al inicio
+    alignItems: 'flex-start', // Alinear a la izquierda para que queden más alineados
     paddingHorizontal: 10, // Ajusta el padding horizontal según sea necesario
   },
   sectionFrame: {
@@ -106,8 +112,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-start',
     gap: 10,
-    marginBottom: 10,
-  },
+    marginBottom: 5, // Ajusta el margen inferior para mayor separación
+},
+
   tagContainer: {
     borderRadius: 20,
     overflow: 'hidden', // Asegura que el borde redondeado se aplique correctamente
@@ -117,7 +124,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     paddingHorizontal: 15,
     color: '#FFF',
-    fontWeight: 'medium',
+    fontWeight: '500', // Cambiar a '500' para consistencia
     textAlign: 'center',
   },
   carouselContainer: {
@@ -138,6 +145,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'center',
+  },
+  createListButton: {
+    backgroundColor: '#fff', // Fondo blanco para el botón
+    paddingVertical: 10, // Mantén un padding vertical fijo
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 10, // Aumenta el marginTop si es necesario
+    alignItems: 'center',
+    justifyContent: 'center',
+},
+
+  createListButtonText: {
+    color: '#256847', // Texto verde
+    fontFamily: 'Manrope',
+    fontSize: 14,
+    fontWeight: '600',
+    lineHeight: 20, // Ajustar el lineHeight si es necesario
   },
 });
 
