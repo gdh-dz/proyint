@@ -2,6 +2,7 @@
 import { auth } from "../firebaseConfig";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 
+
 // Función para iniciar sesión
 export async function logIn(email: string, password: string): Promise<void> {
   try {
