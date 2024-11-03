@@ -17,6 +17,11 @@ export async function getListUsersbyListID(listId: string): Promise<any[]> {
   return querySnapshot.docs.map(doc => doc.data());
 }
 
+export async function getListsByUserId(userId: string): Promise<List[]> {
+  const listsQuery = query(collection(db, "Lista"), where("userId", "==", userId));
+  const querySnapshot = await getDocs(listsQuery);
+  return querySnapshot.docs.map(doc => List.fromFirestore(doc));
+}
 // Obtener productos asociados a una lista específica
 export async function getProductsbyListID(listId: string): Promise<any[]> {
   const productsQuery = query(collection(db, "Products"), where("listId", "==", listId));
