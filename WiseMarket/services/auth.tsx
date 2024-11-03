@@ -1,7 +1,6 @@
-// services/authService.ts
 import { auth } from "../firebaseConfig";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
-
+import { FirebaseError } from "firebase/app"; // Import FirebaseError
 
 // Función para iniciar sesión
 export async function logIn(email: string, password: string): Promise<void> {
@@ -10,7 +9,23 @@ export async function logIn(email: string, password: string): Promise<void> {
     console.log("Usuario autenticado con éxito");
   } catch (error) {
     console.error("Error al iniciar sesión:", error);
-    throw error; // Lanza el error para manejarlo en el componente
+    
+    // Type assertion for FirebaseError
+    const firebaseError = error as FirebaseError; 
+    
+    let errorMessage;
+    switch (firebaseError.code) {
+      case 'auth/user-not-found':
+        errorMessage = 'No hay ningún usuario con este correo electrónico.';
+        break;
+      case 'auth/wrong-password':
+        errorMessage = 'La contraseña es incorrecta.';
+        break;
+      default:
+        errorMessage = 'Error al iniciar sesión. Por favor, inténtalo de nuevo.';
+    }
+    
+    throw new Error(errorMessage); // Error message
   }
 }
 
@@ -21,45 +36,6 @@ export async function logOut(): Promise<void> {
     console.log("Usuario desconectado con éxito");
   } catch (error) {
     console.error("Error al cerrar sesión:", error);
-    throw error; // Lanza el error para manejarlo en el componente
+    throw error;
   }
 }
-/*
- // components/LoginScreen.tsx
-
- // Este es un componente de React Native para la pantalla de inicio de sesión. 
- // Permite al usuario iniciar y cerrar sesión en Firebase utilizando las funciones de autenticación.
-
- import React, { useState } from "react";
- import { View, TextInput, Button, Text, Alert } from "react-native";
- import { logIn, logOut } from "../services/authService";
-
- // Definición del componente de pantalla de inicio de sesión
- export default function LoginScreen() {
-   // Variables de estado para almacenar el correo electrónico y la contraseña
-   const [email, setEmail] = useState("");
-   const [password, setPassword] = useState("");
-
-   // Función para manejar el inicio de sesión
-   const handleLogin = async () => {
-     try {
-       // Intenta iniciar sesión con las credenciales proporcionadas
-       await logIn(email, password);
-       Alert.alert("Inicio de sesión exitoso"); // Muestra un mensaje de éxito
-     } catch (error) {
-       // Si ocurre un error, muestra un mensaje de error
-       Alert.alert("Error al iniciar sesión", error.message);
-     }
-   };
-
-   // Función para manejar el cierre de sesión
-   const handleLogout = async () => {
-     try {
-       // Intenta cerrar la sesión del usuario
-       await logOut();
-       Alert.alert("Cierre de sesión exitoso"); // Muestra un mensaje de éxito
-     } catch (error) {
-       // Si ocurre un error, muestra un mensaje de error
-       Alert.alert("Error al cerrar sesión", error.message);
-     }
-   };*/
