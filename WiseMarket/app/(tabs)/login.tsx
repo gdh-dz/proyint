@@ -1,53 +1,53 @@
-// WiseMarket/app/(tabs)/signup.tsx
-import { createUser } from "@/services/userservices";
+// WiseMarket/app/(tabs)/login.tsx
+import { logIn } from "@/services/auth"; // Import the login function
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, Alert, StyleSheet, Image, TouchableOpacity, Dimensions } from "react-native";
-import { useNavigation } from '@react-navigation/native';
-const { width } = Dimensions.get("window"); // Obtener el ancho de la ventana
+import { NavigationContainer } from "@react-navigation/native";
 
-export default function SignupScreen() {
-  const navigation = useNavigation();
+const { width } = Dimensions.get("window"); 
+
+export default function LoginScreen() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [phone, setPhone] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleRegister = async () => {
-    if (!email || !password || !name || !phone) {
-      Alert.alert("Error", "All fields are required.");
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert("Error", "Se requiere correo y contraseña para entrar");
       return;
     }
 
     setLoading(true);
     try {
-      const user = await createUser(email, password, name, phone);
-      Alert.alert("Success", `User ${user.name} created successfully!`);
+      await logIn(email, password); // Call the login function
+      Alert.alert("Éxito", "Se ha iniciado sesión");
+      //navigation.navigate('Explore');
     } catch (error) {
-      Alert.alert("Error", "Failed to create user. Please try again.");
-      console.error("Error creating user:", error);
+      Alert.alert("Error", "No se pudo iniciar la sesión. Intenta de nuevo");
+      console.error("Hubo un error iniciando sesión", error);
     } finally {
       setLoading(false);
     }
-   //navigation.navigate('');
   };
 
   return (
     <View style={styles.container}>
       <Image
-        source={require('@/assets/images/SignUp3.png')} // Verifica que la ruta sea correcta
+        source={require('@/assets/images/SignUp3.png')} 
         style={styles.backgroundImage}
         resizeMode="cover"
       />
       <View style={styles.outerFrame}>
-        <TouchableOpacity style={styles.switchButton}>
+        <View style={styles.switchButton}>
+        <TouchableOpacity style={styles.buttonBox}>
           <Text style={styles.switchButtonText}>Log In</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Register</Text>
+        </View>
+        <Text style={styles.title}>¡Bienvenido!</Text>
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
-            placeholder="Email"
+            placeholder="Correo"
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
@@ -55,26 +55,13 @@ export default function SignupScreen() {
           />
           <TextInput
             style={styles.input}
-            placeholder="Name"
-            value={name}
-            onChangeText={setName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Phone"
-            value={phone}
-            onChangeText={setPhone}
-            keyboardType="phone-pad"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
+            placeholder="Contraseña"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
           />
         </View>
-        <Button title={loading ? "Registering..." : "Register"} onPress={handleRegister} disabled={loading} />
+        <Button title={loading ? "Logging in..." : "Log In"} onPress={handleLogin} disabled={loading} />
       </View>
     </View>
   );
@@ -99,12 +86,31 @@ const styles = StyleSheet.create({
   },
   outerFrame: {
     paddingVertical: 25,
-    paddingHorizontal: 20, // Reducido para mayor control del tamaño
+    paddingHorizontal: 20,
     backgroundColor: "rgba(37, 104, 71, .9)",
     borderRadius: 20,
     alignItems: "center",
-    width: width * 0.8, // Usa un porcentaje del ancho de la pantalla
-    maxWidth: 400, // Limita el ancho máximo para pantallas más grandes
+    width: width * 0.8,
+    maxWidth: 400,
+  },
+  buttonBox:{
+    padding: 10, // This combines paddingHorizontal and paddingVertical
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+  },
+  loginswitch:{
+    width: 80, 
+    height: 40,
+    position: 'absolute',
+    borderRadius: 20,
+    backgroundColor: '#5F7F1E', 
+  },
+  signupswitch:{
+    flexDirection: 'row', // Adjust this to 'column' if you want vertical stacking
+    paddingHorizontal: 10, // For horizontal padding (0px top/bottom, 10px left/right)
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   switchButton: {
     height: 40,
@@ -116,8 +122,13 @@ const styles = StyleSheet.create({
   },
   switchButtonText: {
     fontSize: 16,
-    color: "#5F7F1E",
+    color: "#FFF",
     padding: 10,
+    width: 80, 
+    height: 40,
+    position: 'absolute',
+    borderRadius: 20,
+    backgroundColor: '#5F7F1E', 
   },
   title: {
     fontSize: 24,
@@ -138,6 +149,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 16,
     backgroundColor: "#fff",
-    width: '100%', // Asegúrate de que el input ocupe el 100% del inputContainer
+    width: '100%',
   },
+  
 });
