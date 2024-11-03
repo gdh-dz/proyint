@@ -1,70 +1,144 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React from 'react';
+import { View, Text, TextInput, StyleSheet, FlatList, Dimensions, SafeAreaView, StatusBar } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const { width } = Dimensions.get('window');
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+const HomeScreen: React.FC = () => {
+  const myLists = ['Lista 1', 'Lista 2', 'Lista 3']; // Datos de ejemplo para "Mis listas"
+  const sharedLists = ['Lista C1', 'Lista C2']; // Datos de ejemplo para "Listas compartidas"
+
+  // Renderiza cada elemento de la lista
+  const renderListItem = (title: string) => (
+    <View style={styles.listItemContainer}>
+      <View style={styles.listFrame} />
+      <Text style={styles.listText}>{title}</Text>
+    </View>
   );
-}
+
+  return (
+    <>
+      <StatusBar barStyle="light-content" backgroundColor="#256847" />
+      <SafeAreaView style={styles.container}>
+        {/* Frame que contiene la barra de búsqueda */}
+        <View style={styles.searchFrame}>
+          <TextInput
+            style={styles.searchBar}
+            placeholder="Buscar lista..."
+            placeholderTextColor="#A9A9A9"
+          />
+        </View>
+
+        {/* Contenedor para las secciones de listas agrupadas en un frame */}
+        <View style={styles.listsContainer}>
+          <View style={styles.listSectionsContainer}>
+            {/* Frame de "Mis listas" */}
+            <View style={styles.sectionFrame}>
+              <View style={styles.tagContainer}>
+                <Text style={styles.sectionTag}>Mis listas</Text>
+              </View>
+              <FlatList
+                horizontal
+                data={myLists}
+                renderItem={({ item }) => renderListItem(item)}
+                keyExtractor={(item) => item}
+                contentContainerStyle={styles.carouselContainer}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+
+            {/* Frame de "Listas compartidas" */}
+            <View style={styles.sectionFrame}>
+              <View style={styles.tagContainer}>
+                <Text style={styles.sectionTag}>Listas compartidas</Text>
+              </View>
+              <FlatList
+                horizontal
+                data={sharedLists}
+                renderItem={({ item }) => renderListItem(item)}
+                keyExtractor={(item) => item}
+                contentContainerStyle={styles.carouselContainer}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+          </View>
+        </View>
+      </SafeAreaView>
+    </>
+  );
+};
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    flex: 1,
+    backgroundColor: '#256847', // Fondo blanco para toda la pantalla
+  },
+  searchFrame: {
+    width: '100%',
+    backgroundColor: '#256847', // Color verde para el frame de búsqueda
+    paddingVertical: 20, // Espacio arriba y abajo de la searchBar
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'center',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  listsContainer: {
+    flex: 1,
+    backgroundColor: '#fff', // Fondo verde para el contenedor de listas
+    paddingVertical: 10, // Espacio vertical para el contenedor de listas
+    alignItems: 'center', // Centrar contenido horizontalmente
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  searchBar: {
+    width: width * 0.9, // 90% del ancho de la pantalla
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0', // Fondo gris claro para la barra de búsqueda
+    color: '#000', // Color del texto de entrada
+  },
+  listSectionsContainer: {
+    flex: 1,
+    justifyContent: 'center', // Centra verticalmente las secciones de listas
+    alignItems: 'center',
+    paddingHorizontal: 10, // Ajusta el padding horizontal según sea necesario
+  },
+  sectionFrame: {
+    width: '100%',
+    paddingVertical: 10,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    gap: 10,
+    marginBottom: 10,
+  },
+  tagContainer: {
+    borderRadius: 20,
+    overflow: 'hidden', // Asegura que el borde redondeado se aplique correctamente
+    backgroundColor: '#5F7F1E', // Verde pasto para el tag
+  },
+  sectionTag: {
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    color: '#FFF',
+    fontWeight: 'medium',
+    textAlign: 'center',
+  },
+  carouselContainer: {
+    paddingHorizontal: 10,
+  },
+  listItemContainer: {
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  listFrame: {
+    width: 150,
+    height: 100, // Ajusta la altura según sea necesario
+    borderRadius: 10,
+    backgroundColor: '#e0e0e0', // Fondo gris para los cuadros
+    marginBottom: 5,
+  },
+  listText: {
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
   },
 });
+
+export default HomeScreen;

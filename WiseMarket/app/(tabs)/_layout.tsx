@@ -33,20 +33,47 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="signup"
+        name="login"
         options={{
-          title: 'SignUp',
+          title: 'login',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'link' : 'link-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="login"
+        name="signup"
         options={{
-          title: 'LogIn',
+          title: 'signup',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="homescreen"
+        options={{
+          title: 'Homescreen',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'menu' : 'menu-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="ajustes"
+        options={{
+          title: 'Ajustes',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'settings' : 'settings-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="misproductos"
+        options={{
+          title: 'Mis Productos',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'cart' : 'cart-outline'} color={color} />
           ),
         }}
       />
