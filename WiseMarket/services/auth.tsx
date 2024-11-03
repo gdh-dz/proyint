@@ -1,6 +1,7 @@
 import { auth } from "../firebaseConfig";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { FirebaseError } from "firebase/app"; // Import FirebaseError
+import { onAuthStateChanged } from "firebase/auth";
 
 // Función para iniciar sesión
 export async function logIn(email: string, password: string): Promise<void> {
@@ -29,6 +30,22 @@ export async function logIn(email: string, password: string): Promise<void> {
   }
 }
 
+export async function getUserIdFromSession(): Promise<string | null> {
+  return new Promise((resolve, reject) => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        resolve(user.uid);  // Retorna el userId si el usuario está autenticado
+      } else {
+        resolve(null);  // Retorna null si no hay un usuario autenticado
+      }
+    }, reject);
+  });
+}
+//
+/*const userId = await getUserIdFromSession();
+if (userId) {
+  // Aquí puedes usar el userId para obtener listas, usuarios, etc.
+}*/
 // Función para cerrar sesión
 export async function logOut(): Promise<void> {
   try {
