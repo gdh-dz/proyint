@@ -1,8 +1,10 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 const ProductScreen: React.FC = () => {
+  const router = useRouter();
   const products = Array(15).fill({ name: 'Producto', imageUrl: 'https://via.placeholder.com/60' });
 
   return (
@@ -29,7 +31,10 @@ const ProductScreen: React.FC = () => {
       </ScrollView>
 
       {/* Add New Product Button */}
-      <TouchableOpacity style={styles.newProductButton}>
+      <TouchableOpacity 
+        style={styles.newProductButton} 
+        onPress={() => router.push('/agregarproducto')} // Navigate to IconSelectionScreen
+      >
         <MaterialIcons name="add-circle-outline" size={48} color="#2E7D32" />
         <Text style={styles.newProductText}>Nuevo producto</Text>
       </TouchableOpacity>
