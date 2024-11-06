@@ -87,6 +87,25 @@ export default function TabLayout() {
                 ),
               }}
             />
+      <Tabs.Screen
+              name="detalledelproducto"
+              options={{
+                title: 'Detalle del Producto',
+                tabBarIcon: ({ color, focused }) => (
+                  <TabBarIcon name={focused ? 'list' : 'list-outline'} color={color} />
+                ),
+              }}
+            />
+      <Tabs.Screen
+              name="agregarproducto"
+              options={{
+                title: 'Agregar nuevo producto',
+                tabBarIcon: ({ color, focused }) => (
+                  <TabBarIcon name={focused ? 'list' : 'list-outline'} color={color} />
+                ),
+              }}
+            />              
     </Tabs>
+      
   );
 }
