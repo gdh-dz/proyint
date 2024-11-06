@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 interface ListItem {
   id: string;
@@ -21,6 +22,7 @@ const sharedLists: ListItem[] = [
 ];
 
 const HomeScreen: React.FC = () => {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = React.useState<string>('');
 
   const handleSearch = (query: string) => {
@@ -66,7 +68,7 @@ const HomeScreen: React.FC = () => {
       />
 
       {/* Create New List Button */}
-      <TouchableOpacity style={styles.createButton}>
+      <TouchableOpacity style={styles.createButton} onPress={() => router.push('/new-list')}>
         <Ionicons name="add-circle-outline" size={24} color="#2E7D32" />
         <Text style={styles.createButtonText}>Crear lista nueva</Text>
       </TouchableOpacity>
@@ -97,10 +99,14 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingVertical: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between', // Ensures equal space between items
+    flexWrap: 'wrap', // Allows items to wrap to the next line if necessary
   },
   listItem: {
     alignItems: 'center',
-    marginRight: 15,
+    width: 100, // Ensure consistent width
+    marginBottom: 15, // Add spacing between rows
   },
   listImage: {
     width: 80,

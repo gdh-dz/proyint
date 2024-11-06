@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 
 const IconSelectionScreen: React.FC = () => {
   const [productName, setProductName] = React.useState('');
@@ -8,10 +7,28 @@ const IconSelectionScreen: React.FC = () => {
   const [supermarket, setSupermarket] = React.useState('');
   const [price, setPrice] = React.useState('');
   const [userList, setUserList] = React.useState('');
+  const [selectedIcon, setSelectedIcon] = React.useState<string | null>(null);
 
   const handleAddProduct = () => {
-   
-    console.log('Producto agregado:', { productName, category, supermarket, price, userList });
+    console.log('Product Info:', { productName, category, supermarket, price, userList, selectedIcon }); // Log the product info
+
+    // Validate if all fields are filled
+    if (!productName || !category || !supermarket || !price || !userList || !selectedIcon) {
+      alert('Faltan datos. Por favor, completa todos los campos antes de agregar el producto.');
+    } else {
+      console.log('Producto agregado:', { productName, category, supermarket, price, userList, selectedIcon });
+
+      // Show a success alert
+      alert('¡Agregado a tus productos!');
+      
+      // Optionally, clear the form after adding the product
+      setProductName('');
+      setCategory('');
+      setSupermarket('');
+      setPrice('');
+      setUserList('');
+      setSelectedIcon(null);
+    }
   };
 
   return (
@@ -20,17 +37,29 @@ const IconSelectionScreen: React.FC = () => {
 
       {/* Icon Selection */}
       <View style={styles.iconContainer}>
-        <TouchableOpacity style={styles.iconCircle}>
-                  <Image source={{ uri: 'http://clipartmag.com/images/animated-vegetables-cliparts-37.jpg' }} style={styles.iconImage} />
+        <TouchableOpacity 
+          style={[styles.iconCircle, selectedIcon === 'vegetable' && styles.selectedIcon]} // Apply style if selected
+          onPress={() => setSelectedIcon('vegetable')}
+        >
+          <Image source={{ uri: 'http://clipartmag.com/images/animated-vegetables-cliparts-37.jpg' }} style={styles.iconImage} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconCircle}>
-                  <Image source={{ uri: 'https://static.vecteezy.com/system/resources/previews/014/151/429/original/milk-cheese-and-yogurt-icon-cartoon-style-vector.jpg' }} style={styles.iconImage} />
+        <TouchableOpacity 
+          style={[styles.iconCircle, selectedIcon === 'dairy' && styles.selectedIcon]} // Apply style if selected
+          onPress={() => setSelectedIcon('dairy')}
+        >
+          <Image source={{ uri: 'https://static.vecteezy.com/system/resources/previews/014/151/429/original/milk-cheese-and-yogurt-icon-cartoon-style-vector.jpg' }} style={styles.iconImage} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconCircle}>
-                  <Image source={{ uri: 'https://img.freepik.com/vector-gratis/ilustracion-dibujos-animados-carne-dibujada-mano_23-2150610000.jpg' }} style={styles.iconImage} />
+        <TouchableOpacity 
+          style={[styles.iconCircle, selectedIcon === 'meat' && styles.selectedIcon]} // Apply style if selected
+          onPress={() => setSelectedIcon('meat')}
+        >
+          <Image source={{ uri: 'https://img.freepik.com/vector-gratis/ilustracion-dibujos-animados-carne-dibujada-mano_23-2150610000.jpg' }} style={styles.iconImage} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconCircle}>
-                  <Image source={{ uri: 'https://img.freepik.com/vector-premium/productos-higiene-personal-caras-lindas-mascara-medica-desinfectante-proteger-contra-conjunto-ilustraciones-dibujos-animados-virus-o-coronavirus-divertido-jabon-animado-botella-champu-concepto-bano_74855-24969.jpg?w=2000' }} style={styles.iconImage} />
+        <TouchableOpacity 
+          style={[styles.iconCircle, selectedIcon === 'hygiene' && styles.selectedIcon]} // Apply style if selected
+          onPress={() => setSelectedIcon('hygiene')}
+        >
+          <Image source={{ uri: 'https://img.freepik.com/vector-premium/productos-higiene-personal-caras-lindas-mascara-medica-desinfectante-proteger-contra-conjunto-ilustraciones-dibujos-animados-virus-o-coronavirus-divertido-jabon-animado-botella-champu-concepto-bano_74855-24969.jpg?w=2000' }} style={styles.iconImage} />
         </TouchableOpacity>
       </View>
 
@@ -106,6 +135,10 @@ const styles = StyleSheet.create({
   iconImage: {
     width: 40,
     height: 40,
+  },
+  selectedIcon: {
+    borderColor: '#2E7D32',
+    borderWidth: 2,
   },
   detailsContainer: {
     width: '100%',

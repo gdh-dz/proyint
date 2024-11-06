@@ -28,7 +28,7 @@ const ProfileScreen: React.FC = () => {
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      setProfileImage(result.assets[0].uri); // Updated to use assets
+      setProfileImage(result.assets[0].uri); 
     }
   };
 
