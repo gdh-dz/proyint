@@ -29,7 +29,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="misproductos" options={{ title: "Mis productos" }} />
+        <Stack.Screen name="agregarproducto" options={{ title: "Mis productos" }} />
         <Stack.Screen name="IconSelectionScreen" options={{ title: "Agregar Producto" }} />
 
         <Stack.Screen name="homescreen" options={{ title: "Homescreen" }} />
