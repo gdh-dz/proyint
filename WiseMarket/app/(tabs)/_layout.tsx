@@ -77,16 +77,17 @@ export default function TabLayout() {
           ),
         }}
       />
-      
       <Tabs.Screen
-              name="new-list"
+              name="detalledelproducto"
               options={{
-                title: 'CreateList',
+                title: 'Detalle del Producto',
                 tabBarIcon: ({ color, focused }) => (
                   <TabBarIcon name={focused ? 'list' : 'list-outline'} color={color} />
                 ),
               }}
             />
+                  
     </Tabs>
+      
   );
 }
