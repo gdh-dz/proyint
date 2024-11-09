@@ -1,9 +1,12 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, Dimensions, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
 const HomeScreen: React.FC = () => {
+  const router = useRouter();
   const myLists = ['Lista 1', 'Lista 2', 'Lista 3']; // Datos de ejemplo para "Mis listas"
   const sharedLists = ['Lista C1', 'Lista C2']; // Datos de ejemplo para "Listas compartidas"
 
@@ -63,7 +66,8 @@ const HomeScreen: React.FC = () => {
           </View>
 
           {/* Botón "Crear lista" */}
-          <TouchableOpacity style={styles.createListButton}>
+          <TouchableOpacity style={styles.createListButton} onPress={() => router.push('/new-list')}>
+          <Ionicons name="add-circle-outline" size={24} color="#2E7D32" />
             <Text style={styles.createListButtonText}>Crear lista</Text>
           </TouchableOpacity>
         </View>
@@ -146,10 +150,10 @@ const styles = StyleSheet.create({
   },
   createListButton: {
     backgroundColor: '#fff', // Fondo blanco para el botón
-    paddingVertical: 100,
-    paddingHorizontal: 20,
+    paddingVertical: 20, 
+    paddingHorizontal: 20, 
     borderRadius: 20,
-    marginTop: 5, // Acercar el botón a las listas
+    marginTop: 10, // Acercar el botón a las listas
     alignItems: 'center',
     justifyContent: 'center',
   },
