@@ -1,12 +1,13 @@
-// WiseMarket/app/(tabs)/login.tsx
 import { logIn } from "@/services/auth"; // Import the login function
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Alert, StyleSheet, Image, TouchableOpacity, Dimensions } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer } from '@react-navigation/native';
+import { View, Text, TextInput, Alert, StyleSheet, Image, TouchableOpacity, Dimensions } from "react-native";
+import { useNavigation } from "@react-navigation/native"; // Import useNavigation
 
-const { width } = Dimensions.get("window"); 
+const { width } = Dimensions.get("window");
 
 export default function LoginScreen() {
+  const navigation = useNavigation(); // Initialize navigation
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -21,7 +22,7 @@ export default function LoginScreen() {
     try {
       await logIn(email, password); // Call the login function
       Alert.alert("Éxito", "Se ha iniciado sesión");
-      //navigation.navigate('Explore');
+     // navigation.navigate("Home"); // Navigate to Explore or your main screen
     } catch (error) {
       Alert.alert("Error", "No se pudo iniciar la sesión. Intenta de nuevo");
       console.error("Hubo un error iniciando sesión", error);
@@ -33,7 +34,7 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <Image
-        source={require('@/assets/images/SignUp3.png')} 
+        source={require('@/assets/images/SignUp3.png')}
         style={styles.backgroundImage}
         resizeMode="cover"
       />
@@ -64,7 +65,7 @@ export default function LoginScreen() {
         <TouchableOpacity
           style={[styles.registerButton, { opacity: loading ? 0.6 : 1 }]}
           onPress={loading ? undefined : handleLogin}
-          disabled={loading} // Deshabilita el botón mientras se registra
+          disabled={loading}
         >
           <Text style={styles.registerButtonText}>
             {loading ? "Logging in" : "Log in"}
@@ -74,7 +75,6 @@ export default function LoginScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
