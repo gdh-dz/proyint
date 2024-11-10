@@ -1,20 +1,63 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, Dimensions, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-
+import { getUserIdFromSession } from '../../services/auth'; // Asegúrate de importar la función
+import { getIndividualListsByUserId, getCollaborativeListsByUserId} from '../../services/lists'; // Asegúrate de importar la función
+import { List } from '../../models/Lists';
 const { width } = Dimensions.get('window');
 
 const HomeScreen: React.FC = () => {
   const router = useRouter();
-  const myLists = ['Lista 1', 'Lista 2', 'Lista 3']; // Datos de ejemplo para "Mis listas"
-  const sharedLists = ['Lista C1', 'Lista C2']; // Datos de ejemplo para "Listas compartidas"
+  const [myLists, setMyLists] = useState<List[]>([]);  // Estado para las listas del usuario
+  const [ourLists, setOurLists] = useState<List[]>([]);  // Estado para las listas del usuario
+
+  const [loading, setLoading] = useState<boolean>(true); // Estado de carga
+
+  useEffect(() => {
+    const fetchindividuallists = async () => {
+      try {
+        const userId = await getUserIdFromSession();
+        if (userId) {
+          const lists = await getIndividualListsByUserId(userId); // Obtener las listas del usuario
+          setMyLists(lists); // Almacenar las listas en el estado
+        } else {
+          console.log('No user found');
+        }
+      } catch (error) {
+        console.error('Error fetching lists: ', error);
+      } finally {
+        setLoading(false); // Finaliza el estado de carga
+      }
+    };
+
+    fetchindividuallists();
+  }, []);
+  useEffect(() => {
+    const fetchcolaborativelists = async () => {
+      try {
+        const userId = await getUserIdFromSession();
+        if (userId) {
+          const lists = await getCollaborativeListsByUserId(userId); // Obtener las listas del usuario
+          setOurLists(lists); // Almacenar las listas en el estado
+        } else {
+          console.log('No user found');
+        }
+      } catch (error) {
+        console.error('Error fetching lists: ', error);
+      } finally {
+        setLoading(false); // Finaliza el estado de carga
+      }
+    };
+
+    fetchcolaborativelists();
+  }, []);
 
   // Renderiza cada elemento de la lista
-  const renderListItem = (title: string) => (
-    <View style={styles.listItemContainer}>
+  const renderListItem = (list: List) => (
+    <View style={styles.listItemContainer} key={list.listName}>
       <View style={styles.listFrame} />
-      <Text style={styles.listText}>{title}</Text>
+      <Text style={styles.listText}>{list.listName}</Text>
     </View>
   );
 
@@ -39,14 +82,21 @@ const HomeScreen: React.FC = () => {
               <View style={styles.tagContainer}>
                 <Text style={styles.sectionTag}>Mis listas</Text>
               </View>
-              <FlatList
-                horizontal
-                data={myLists}
-                renderItem={({ item }) => renderListItem(item)}
-                keyExtractor={(item) => item}
-                contentContainerStyle={styles.carouselContainer}
-                showsHorizontalScrollIndicator={false}
-              />
+              
+              {loading ? (
+                <Text>Cargando...</Text>
+              ) : myLists.length === 0 ? (
+                <Text>No tienes listas.</Text>
+              ) : (
+                <FlatList
+                  horizontal
+                  data={myLists}
+                  renderItem={({ item }) => renderListItem(item)}
+                  keyExtractor={(item) => item.listName ?? 'default-key'}
+                  contentContainerStyle={styles.carouselContainer}
+                  showsHorizontalScrollIndicator={false}
+                />
+              )}
             </View>
 
             {/* Frame de "Listas compartidas" */}
@@ -56,9 +106,9 @@ const HomeScreen: React.FC = () => {
               </View>
               <FlatList
                 horizontal
-                data={sharedLists}
+                data={ourLists}
                 renderItem={({ item }) => renderListItem(item)}
-                keyExtractor={(item) => item}
+                keyExtractor={(item) => item.listName ?? 'default-key' }
                 contentContainerStyle={styles.carouselContainer}
                 showsHorizontalScrollIndicator={false}
               />
