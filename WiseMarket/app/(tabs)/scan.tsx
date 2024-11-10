@@ -29,8 +29,8 @@ const EscanearCodigo: React.FC = () => {
 
   const hanldeShareList = (listId: string) => {
     console.log("SharingList With ID:", listId);
-    router.replace('/');
-    //router.replace(`confirmacioncompartido?id=${listId}`);
+    router.replace(`/(tabs)/confirmacioncompartido?id=${listId}`);
+    //router.replace(`confirmacioncompartido?id=${listId}?id=${listId}`);
   };
 
   const handleBarCodeScanned = async ({ type, data }: { type: string; data: string }) => {
@@ -57,6 +57,21 @@ const EscanearCodigo: React.FC = () => {
     }
   };
 
+  const fetchListId = async (quizId: string) => {
+    const list = await getListById(quizId);
+
+    if (list == null) {
+      console.error("Error fetching exercise by ID:");
+      ToastAndroid.show('Exercise not found.', ToastAndroid.LONG);
+    } else if (list) {
+      console.log("list found:", list);
+      hanldeShareList(quizId); // Navigate to quiz if found
+      ToastAndroid.show(`list found: ${list.listName}`, ToastAndroid.LONG);
+    } else {
+      ToastAndroid.show('No list found with this ID.', ToastAndroid.LONG);
+    }
+  };
+
 
   if (hasPermission === null) {
     return <Text>Requesting camera permission...</Text>;
@@ -67,18 +82,10 @@ const EscanearCodigo: React.FC = () => {
 
   return (
     <View style={styles.escanearCodigo}>
-      <Image
-        style={styles.imageIcon}
-        resizeMode="cover"
-        source={require('../../assets/images/relieve.png')}
-      />
+     
       <View style={styles.escanearCodigoChild} />
       <Pressable style={styles.vector} onPress={() => router.back()}>
-        <Image
-          style={styles.icon}
-          resizeMode="cover"
-          source={require('../../assets/images/vector-flecha.png')}
-        />
+       
       </Pressable>
       <Text style={styles.fotografaElCdigo}>Fotografía el código QR</Text>
 
@@ -172,7 +179,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   submitButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: '#5F7F1E',
     borderRadius: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,

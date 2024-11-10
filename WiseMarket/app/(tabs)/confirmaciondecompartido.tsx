@@ -1,31 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, ToastAndroid } from 'react-native';
 import { addUserToList } from '@/services/lists'; // Aquí va el servicio que agregará al usuario
+import { useLocalSearchParams } from 'expo-router';
+import { getUserIdFromSession } from '@/services/auth';
 
 const AgregarUsuarioLista: React.FC = () => {
+
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
-  
+  const { id } = useLocalSearchParams();
+
   useEffect(() => {
-    // Función para agregar al usuario a la lista
     const agregarUsuario = async () => {
       try {
-        const result = await addUserToList('userId', 'listId'); // Pasa el ID del usuario y el ID de la lista
-        if (result) {
-          setMessage('¡Usuario agregado a la lista con éxito!');
+        // Verifica si 'id' es un arreglo y usa el primer elemento si es necesario
+        const userId = getUserIdFromSession(); // Asumiendo que ya tienes el 'userId'
+        const listId = Array.isArray(id) ? id[0] : id; // Asegura que 'id' sea una cadena
+  
+        if (typeof listId === 'string') {
+          const result = await addUserToList(userId, listId); // Pasa el ID de la lista
         } else {
-          setMessage('Hubo un error al agregar al usuario.');
+          console.error('ID inválido');
         }
       } catch (error) {
-        setMessage('Error de conexión.');
-        ToastAndroid.show('Error de conexión.', ToastAndroid.LONG);
-      } finally {
-        setLoading(false);
+        console.error('Error al agregar el usuario:', error);
       }
     };
-
+  
     agregarUsuario();
-  }, []);
+  }, [id]);
+
 
   return (
     <View style={styles.container}>
