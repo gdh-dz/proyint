@@ -2,33 +2,36 @@
 import { QueryDocumentSnapshot } from "firebase/firestore";
 import { app } from "../firebaseConfig";
 import { getFirestore } from "firebase/firestore";
-import { User } from "./User";
+
 const db = getFirestore(app);
 
 export class List {
-  budget: number;
-  creationDate: Date;
-  listName: string;
-  usersInList: User[];
-  montoArticulos: number;
-  montoLista: number;
-  status: string;
-  totalPrice: number;
+  budget: number | null;
+  creationDate: Date | null;
+  listName: string | null;
+  usersInList: string[] | null;
+  categories: string[] | null;  // Array de categorías relacionadas a esta lista
+  montoArticulos: number | null;
+  montoLista: number | null;
+  status: string | null;
+  totalPrice: number | null;
 
   constructor(
-    budget: number,
-    creationDate: Date,
-    listName: string,
-    usersInList: User[],
-    montoArticulos: number,
-    montoLista: number,
-    status: string,
-    totalPrice: number
+    budget: number | null = null,
+    creationDate: Date | null = null,
+    listName: string | null = null,
+    usersInList: string[] | null = null,
+    categories: string[] | null = null,
+    montoArticulos: number | null = null,
+    montoLista: number | null = null,
+    status: string | null = null,
+    totalPrice: number | null = null
   ) {
     this.budget = budget;
-    this.usersInList = usersInList
     this.creationDate = creationDate;
     this.listName = listName;
+    this.usersInList = usersInList;
+    this.categories = categories;
     this.montoArticulos = montoArticulos;
     this.montoLista = montoLista;
     this.status = status;
@@ -36,21 +39,22 @@ export class List {
   }
 
   toFirestore(): {
-    budget: number;
-    creationDate: Date;
-    listName: string;
-        usersInList: User[],
-
-    montoArticulos: number;
-    montoLista: number;
-    status: string;
-    totalPrice: number;
+    budget: number | null;
+    creationDate: Date | null;
+    listName: string | null;
+    usersInList: string[] | null;
+    categories: string[] | null;
+    montoArticulos: number | null;
+    montoLista: number | null;
+    status: string | null;
+    totalPrice: number | null;
   } {
     return {
       budget: this.budget,
       creationDate: this.creationDate,
       listName: this.listName,
       usersInList: this.usersInList,
+      categories: this.categories,
       montoArticulos: this.montoArticulos,
       montoLista: this.montoLista,
       status: this.status,
@@ -61,14 +65,15 @@ export class List {
   static fromFirestore(snapshot: QueryDocumentSnapshot): List {
     const data = snapshot.data();
     return new List(
-      data.budget,
-      data.creationDate.toDate(),
-      data.listName,
-      data.usersInList,
-      data.montoArticulos,
-      data.montoLista,
-      data.status,
-      data.totalPrice
+      data.budget ?? null,
+      data.creationDate ? data.creationDate.toDate() : null,
+      data.listName ?? null,
+      data.usersInList ?? null,
+      data.categories ?? null,
+      data.montoArticulos ?? null,
+      data.montoLista ?? null,
+      data.status ?? null,
+      data.totalPrice ?? null
     );
   }
 }
