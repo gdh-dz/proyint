@@ -1,11 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, Dimensions, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, router } from 'expo-router';
 import { getUserIdFromSession } from '../../services/auth'; // Asegúrate de importar la función
 import { getIndividualListsByUserId, getCollaborativeListsByUserId} from '../../services/lists'; // Asegúrate de importar la función
 import { List } from '../../models/Lists';
 const { width } = Dimensions.get('window');
+import * as Linking from "expo-linking";
+import { useNavigation } from '@react-navigation/native';
+
+/*const [data, setData] = useState("")
+const prefix = Linking.createURL('/')
+const linking = {
+  prefixes: [prefix],
+  config : {
+    screens:{
+      Home: "index"
+    }
+  }
+}
+
+function handleDeepLink(event: { url: string; }){
+  const parsedData = Linking.parse(event.url);
+  setData(parsedData.path || "")
+}
+useEffect (() => {
+  const subscription = Linking.addEventListener('url', handleDeepLink);
+  return () => subscription.remove();
+}, [])
+*/
 
 const HomeScreen: React.FC = () => {
   const router = useRouter();
@@ -217,3 +240,5 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
+
+

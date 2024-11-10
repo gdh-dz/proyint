@@ -25,11 +25,22 @@ export async function getUsersInList(listId: string): Promise<any[]> {
 }
 
 // Añadir un usuario a una lista específica
-export async function addUserToList(listId: string, userId: string): Promise<void> {
+export async function addUserToList(listId: string, userId: string): Promise<boolean> {
   const listDocRef = doc(db, "Lista", listId);
-  await updateDoc(listDocRef, {
-    usersInList: arrayUnion(userId)
-  });
+  
+  try {
+    // Actualiza el documento de la lista añadiendo al usuario
+    await updateDoc(listDocRef, {
+      usersInList: arrayUnion(userId),  // 'arrayUnion' asegura que el usuario no se repita
+    });
+
+    // Si todo sale bien, se retorna 'true' para indicar éxito
+    return true;
+  } catch (error) {
+    // Manejo de errores en caso de que falle la operación
+    console.error("Error al agregar el usuario a la lista:", error);
+    return false;
+  }
 }
 
 // Obtener listas a las que está asociado un usuario específico

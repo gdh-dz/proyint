@@ -86,6 +86,15 @@ export default function TabLayout() {
                 ),
               }}
             />
+            <Tabs.Screen
+              name="confirmacioncompartido"
+              options={{
+                title: 'Confirmacion del Producto',
+                tabBarIcon: ({ color, focused }) => (
+                  <TabBarIcon name={focused ? 'checkbox' : 'checkbox-outline'} color={color} />
+                ),
+              }}
+            />
                   
     </Tabs>
       
