@@ -3,6 +3,7 @@ import {db} from "../firebaseConfig"; // Asegúrate de ajustar la ruta
 import { doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs, arrayUnion } from "firebase/firestore";
 import { List } from "../models/Lists";
 
+
 // Función para obtener una lista por su ID
 export async function getListById(listId: string): Promise<List | null> {
   const docRef = doc(db, "Lista", listId);
@@ -88,9 +89,38 @@ export async function getProductsbyListID(listId: string): Promise<any[]> {
 }
 
 // Crear una nueva lista
+import { getUserIdFromSession } from "../services/auth"; // Asegúrate de importar la función para obtener el userId
+
 export async function createList(list: List, listId: string): Promise<void> {
-  await setDoc(doc(db, "Lista", listId), list.toFirestore());
+  try {
+    // Obtener el userId del usuario logueado
+    const userId = await getUserIdFromSession();
+    
+    // Si no hay un usuario logueado, no se puede crear la lista
+    if (!userId) {
+      throw new Error("No user is logged in.");
+    }
+    const listWithUser = new List(
+      list.budget,
+      list.creationDate,
+      list.listName,
+      [userId, ...(list.usersInList || [])],  // Añadir el userId al array usersInList
+      list.categories,
+      list.montoArticulos,
+      list.montoLista,
+      list.status,
+      list.totalPrice
+    );
+
+    // Crear la lista en la base de datos
+    await setDoc(doc(db, "Lista", listId), listWithUser.toFirestore());
+
+  } catch (error) {
+    console.error("Error creating list: ", error);
+    throw error;
+  }
 }
+
 
 // Eliminar una lista
 export async function deleteList(listId: string): Promise<void> {
