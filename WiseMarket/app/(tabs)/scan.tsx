@@ -29,7 +29,7 @@ const EscanearCodigo: React.FC = () => {
 
   const hanldeShareList = (listId: string) => {
     console.log("SharingList With ID:", listId);
-    router.replace(`/(tabs)/confirmacioncompartido?id=${listId}`);
+    router.replace(`/(tabs)/confirmaciondecompartido?id=${listId}`);
     //router.replace(`confirmacioncompartido?id=${listId}?id=${listId}`);
   };
 
@@ -42,7 +42,7 @@ const EscanearCodigo: React.FC = () => {
     const decodedData = decodeBase64(data);
     if (decodedData) {
       const listId = String(decodedData);
-      await getListById(listId);
+      await fetchListId(listId);
     } else {
       ToastAndroid.show('Error decoding code.', ToastAndroid.LONG);
     }

@@ -18,7 +18,8 @@ const AgregarUsuarioLista: React.FC = () => {
         const listId = Array.isArray(id) ? id[0] : id; // Asegura que 'id' sea una cadena
   
         if (typeof listId === 'string') {
-          const result = await addUserToList(userId, listId); // Pasa el ID de la lista
+          const result = await addUserToList(listId,await userId ?? "");
+          console.log(result) // Pasa el ID de la lista
         } else {
           console.error('ID inválido');
         }
