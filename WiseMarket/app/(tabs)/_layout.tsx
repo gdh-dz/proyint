@@ -50,15 +50,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="homescreen"
-        options={{
-          title: 'Homescreen',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'menu' : 'menu-outline'} color={color} />
-          ),
-        }}
-      />
+      
       <Tabs.Screen
         name="ajustes"
         options={{
@@ -78,16 +70,34 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-              name="detalledelproducto"
-              options={{
-                title: 'Detalle del Producto',
-                tabBarIcon: ({ color, focused }) => (
-                  <TabBarIcon name={focused ? 'list' : 'list-outline'} color={color} />
-                ),
-              }}
-            />
-                  
+        name="detalledelproducto"
+        options={{
+          title: 'Detalle del Producto',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'list' : 'list-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="confirmaciondecompartido"
+        options={{
+          title: 'Confirmacion del Producto',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'checkbox' : 'checkbox-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="scan"
+        options={{
+          title: 'scan ',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'camera' : 'camera-outline'} color={color} />
+          ),
+        }}
+      />
+
     </Tabs>
-      
+
   );
 }

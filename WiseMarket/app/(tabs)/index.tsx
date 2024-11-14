@@ -1,11 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, FlatList, Dimensions, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, router } from 'expo-router';
 import { getUserIdFromSession } from '../../services/auth'; // Asegúrate de importar la función
 import { getIndividualListsByUserId, getCollaborativeListsByUserId} from '../../services/lists'; // Asegúrate de importar la función
 import { List } from '../../models/Lists';
 const { width } = Dimensions.get('window');
+import * as Linking from "expo-linking";
+import { useNavigation } from '@react-navigation/native';
+import { auth } from '@/firebaseConfig';
+import QRCode from 'react-native-qrcode-svg';
+
+
+/*const [data, setData] = useState("")
+const prefix = Linking.createURL('/')
+const linking = {
+  prefixes: [prefix],
+  config : {
+    screens:{
+      Home: "index"
+    }
+  }
+}
+
+function handleDeepLink(event: { url: string; }){
+  const parsedData = Linking.parse(event.url);
+  setData(parsedData.path || "")
+}
+useEffect (() => {
+  const subscription = Linking.addEventListener('url', handleDeepLink);
+  return () => subscription.remove();
+}, [])
+*/
 
 const HomeScreen: React.FC = () => {
   const router = useRouter();
@@ -14,50 +40,65 @@ const HomeScreen: React.FC = () => {
 
   const [loading, setLoading] = useState<boolean>(true); // Estado de carga
 
+  const fetchIndividualLists = async (userId: string) => {
+    try {
+      const lists = await getIndividualListsByUserId(userId);
+      setMyLists(lists);
+    } catch (error) {
+      console.error('Error fetching individual lists:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Función para obtener las listas colaborativas
+  const fetchCollaborativeLists = async (userId: string) => {
+    try {
+      const lists = await getCollaborativeListsByUserId(userId);
+
+      console.log(userId)
+      setOurLists(lists);
+    } catch (error) {
+      console.error('Error fetching collaborative lists:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Listener para autenticación
   useEffect(() => {
-    const fetchindividuallists = async () => {
-      try {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
         const userId = await getUserIdFromSession();
         if (userId) {
-          const lists = await getIndividualListsByUserId(userId); // Obtener las listas del usuario
-          setMyLists(lists); // Almacenar las listas en el estado
-        } else {
-          console.log('No user found');
+          setLoading(true); // Iniciar carga
+          await fetchIndividualLists(userId);
+          await fetchCollaborativeLists(userId);
         }
-      } catch (error) {
-        console.error('Error fetching lists: ', error);
-      } finally {
-        setLoading(false); // Finaliza el estado de carga
+      } else {
+        setMyLists([]);
+        setOurLists([]);
       }
-    };
+    });
 
-    fetchindividuallists();
+    return unsubscribe;
   }, []);
-  useEffect(() => {
-    const fetchcolaborativelists = async () => {
-      try {
-        const userId = await getUserIdFromSession();
-        if (userId) {
-          const lists = await getCollaborativeListsByUserId(userId); // Obtener las listas del usuario
-          setOurLists(lists); // Almacenar las listas en el estado
-        } else {
-          console.log('No user found');
-        }
-      } catch (error) {
-        console.error('Error fetching lists: ', error);
-      } finally {
-        setLoading(false); // Finaliza el estado de carga
-      }
-    };
-
-    fetchcolaborativelists();
-  }, []);
-
+  const encodeBase64 = (data: string | undefined) => {
+    try {
+      const decodedData = btoa(data ?? ""); // Usa una cadena vacía si `data` es undefined
+      return decodedData;
+    } catch (error) {
+      console.error("Error codificando a Base64: ", error);
+      return null;
+    }
+  };
+  
   // Renderiza cada elemento de la lista
   const renderListItem = (list: List) => (
     <View style={styles.listItemContainer} key={list.listName}>
       <View style={styles.listFrame} />
       <Text style={styles.listText}>{list.listName}</Text>
+      <QRCode value={encodeBase64(list.id ?? undefined) ?? ""} size={270} />
     </View>
   );
 
@@ -217,3 +258,5 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
+
+
