@@ -12,16 +12,16 @@ const IconSelectionScreen: React.FC = () => {
   const handleAddProduct = () => {
     console.log('Product Info:', { productName, category, supermarket, price, userList, selectedIcon }); // Log the product info
 
-    // Validate if all fields are filled
+    // Validation
     if (!productName || !category || !supermarket || !price || !userList || !selectedIcon) {
       alert('Faltan datos. Por favor, completa todos los campos antes de agregar el producto.');
     } else {
       console.log('Producto agregado:', { productName, category, supermarket, price, userList, selectedIcon });
 
-      // Show a success alert
+      // Success alert
       alert('¡Agregado a tus productos!');
       
-      // Optionally, clear the form after adding the product
+      // Clears the form after adding the product
       setProductName('');
       setCategory('');
       setSupermarket('');
@@ -63,7 +63,7 @@ const IconSelectionScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Product Details Input Rectangle */}
+      {/* Product Details Input */}
       <View style={styles.detailsContainer}>
         <TextInput
           style={styles.input}

@@ -32,6 +32,9 @@ export default function RootLayout() {
         <Stack.Screen name="agregarproducto" options={{ title: "Mis productos" }} />
         <Stack.Screen name="IconSelectionScreen" options={{ title: "Agregar Producto" }} />
 
+        <Stack.Screen name="detalledelproducto" options={{ title: "Detalle del Producto" }} />
+        <Stack.Screen name="editarproducto" options={{ title: "Editar Producto" }} />
+
         <Stack.Screen name="homescreen" options={{ title: "Homescreen" }} />
         <Stack.Screen name="new-list" options={{ title: "Crear Nueva Lista" }} />
 
