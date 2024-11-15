@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import { Alert, Image, Modal, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, FlatList, Image, Modal, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { getProductos } from '../services/Products'; // Asegúrate de colocar la ruta correcta al servicio
+import { Producto } from '@/models/Products';
 
 const CrearNuevaLista = () => {
   const [nombreLista, setNombreLista] = useState('');
@@ -8,9 +10,33 @@ const CrearNuevaLista = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [presupuesto, setPresupuesto] = useState('');
   const [selectedIcon, setSelectedIcon] = useState(0);
-
+  const [productos, setProductos] = useState<Producto[]>([]); // Estado para los productos
 
   const toggleSwitch = () => setIsShared(previousState => !previousState);
+
+  // Función para obtener productos al montar el componente
+  useEffect(() => {
+    const fetchProductos = async () => {
+      try {
+        const productosData = await getProductos();
+        setProductos(productosData);
+      } catch (error) {
+        console.error("Error al obtener productos:", error);
+      }
+    };
+    fetchProductos();
+  }, []);
+
+  // Renderizado de cada producto en la cuadrícula
+  const renderProducto = ({ item }: { item: Producto }) => (
+    <View style={styles.iconWrapper}>
+      <Image
+        source={{ uri: item.imagenURL ?? '../../assets/images/favicon.png' }} // URL de imagen placeholder
+        style={styles.icon}
+      />
+      <Text style={styles.iconLabel}>{item.nombre}</Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -36,15 +62,14 @@ const CrearNuevaLista = () => {
         <Text style={[styles.switchLabel, !isShared && styles.activeLabel]}>No</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.iconContainer}>
-        {[...Array(12)].map((_, index) => (
-          <View key={index} style={styles.iconWrapper}>
-            <Image source={{ uri: '../../assets/images/favicon.png' }} style={styles.icon} />
-            <Text style={styles.iconLabel}>Producto</Text>
-          </View>
-        ))}
-      </ScrollView>
-
+      {/* FlatList para mostrar productos en cuadrícula */}
+      <FlatList
+        data={productos}
+        renderItem={renderProducto}
+        keyExtractor={(_, index) => index.toString()}
+        numColumns={4} // 4 columnas
+        contentContainerStyle={styles.iconContainer}
+      />
       <TouchableOpacity style={styles.addButton}>
         <Text style={styles.addButtonText}>Nuevo producto</Text>
       </TouchableOpacity>
@@ -76,20 +101,7 @@ const CrearNuevaLista = () => {
                   </TouchableOpacity>
 
                   <Text style={styles.label}>Escoge icono</Text>
-                  <ScrollView horizontal contentContainerStyle={styles.iconContainer}>
-                    {[...Array(6)].map((_, index) => (
-                      <TouchableOpacity 
-                        key={index} 
-                        style={[
-                          styles.iconButton, 
-                          selectedIcon === index && styles.iconButtonSelected
-                        ]}
-                        onPress={() => setSelectedIcon(index)}
-                      >
-                        <Text style={styles.iconText}>Lista {index + 1}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
+                  
                   
                   <Text style={styles.label}>Selecciona el presupuesto de la lista:</Text>
                   <TextInput
@@ -110,7 +122,6 @@ const CrearNuevaLista = () => {
           </Modal>
         </SafeAreaView>
       </SafeAreaProvider>
-      {/* End Modal View */}
     </View>
   );
 };
@@ -118,58 +129,54 @@ const CrearNuevaLista = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 16,
     backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+    marginBottom: 16,
   },
   label: {
     fontSize: 16,
-    color: '#6c757d',
-    marginVertical: 8,
+    marginBottom: 8,
   },
   input: {
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 8,
+    borderRadius: 4,
+    marginBottom: 16,
   },
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   switchLabel: {
     fontSize: 16,
-    color: '#6c757d',
-    marginHorizontal: 10,
+    marginHorizontal: 8,
   },
   activeLabel: {
-    color: '#4CAF50',
+    color: '#81b0ff',
   },
   iconContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    marginVertical: 20,
+    paddingBottom: 20,
   },
   iconWrapper: {
+    flex: 1,
     alignItems: 'center',
-    marginBottom: 10,
+    margin: 4,
+    maxWidth: '25%', // Ajuste para cada columna
   },
   icon: {
     width: 50,
     height: 50,
-    borderRadius: 25,
+    marginBottom: 4,
   },
   iconLabel: {
     fontSize: 12,
-    marginTop: 5,
+    textAlign: 'center',
   },
   addButton: {
     alignItems: 'center',
