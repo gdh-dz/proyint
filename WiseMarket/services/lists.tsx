@@ -102,25 +102,25 @@ export async function getProductsbyListID(listId: string): Promise<any[]> {
 
 // Crear una nueva lista
 import { getUserIdFromSession } from "../services/auth"; // Asegúrate de importar la función para obtener el userId
+import { ProductoLista } from "@/models/ProductsList";
 
 // Función para crear una lista
-export async function createList(list: List): Promise<void> {
+export async function createList(list: List, productos: string[]): Promise<void> {
   try {
     // Obtener el userId del usuario logueado
     const userId = await getUserIdFromSession();
     
-    // Si no hay un usuario logueado, no se puede crear la lista
     if (!userId) {
       throw new Error("No user is logged in.");
     }
 
     // Crear un nuevo objeto de lista, añadiendo el userId al array usersInList
     const listWithUser = new List(
-      null, // El id será generado por Firestore
+      null,
       list.budget,
       list.creationDate,
       list.listName,
-      [userId, ...(list.usersInList || [])],  // Añadir el userId al array usersInList
+      [userId, ...(list.usersInList || [])],
       list.categories,
       list.montoArticulos,
       list.montoLista,
@@ -128,13 +128,29 @@ export async function createList(list: List): Promise<void> {
       list.totalPrice
     );
 
-    // Crear la lista en la base de datos en la colección "Listas"
+    // Crear la lista en Firestore
     const docRef = await addDoc(collection(db, "Listas"), listWithUser.toFirestore());
+    const listaId = docRef.id;
 
-    console.log("Document written with ID: ", docRef.id);
+    console.log("Lista creada con ID:", listaId);
 
+    // Crear objetos ProductoLista por cada producto seleccionado
+    for (const productoId of productos) {
+      const nuevoProductoLista = new ProductoLista(
+        productoId, // ID del producto
+        1, // Cantidad inicial
+        listaId, // ID de la lista a la que pertenece el producto
+        false, // No comprado inicialmente
+        null, // Usuario asignado nulo por defecto
+        new Date() // Fecha de actualización actual
+      );
+
+      await addDoc(collection(db, "ProductosListas"), nuevoProductoLista.toFirestore());
+    }
+
+    console.log("Productos asociados a la lista creados exitosamente.");
   } catch (error) {
-    console.error("Error creating list: ", error);
+    console.error("Error creando la lista y sus productos:", error);
     throw error;
   }
 }
