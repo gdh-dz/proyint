@@ -6,22 +6,22 @@ const db = getFirestore(app);
 
 export class Category {
   nombre: string;
-  listId: string;  // ID de la lista a la que pertenece la categoría
+  iconURL: string; // ID de la lista a la que pertenece la categoría
 
-  constructor(nombre: string, listId: string) {
+  constructor(nombre: string, iconURL: string) {
     this.nombre = nombre;
-    this.listId = listId;
+    this.iconURL = iconURL;
   }
 
-  toFirestore(): { nombre: string; listId: string } {
+  toFirestore(): { nombre: string; iconURL: string} {
     return {
       nombre: this.nombre,
-      listId: this.listId,
+      iconURL: this.iconURL
     };
   }
 
   static fromFirestore(snapshot: QueryDocumentSnapshot): Category {
     const data = snapshot.data();
-    return new Category(data.nombre, data.listId);
+    return new Category(data.nombre, data.iconURL);
   }
 }

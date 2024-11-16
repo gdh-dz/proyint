@@ -1,33 +1,48 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
+import { Category } from '../models/Category';
+import { getCategorys } from '../services/categorias';
+import { addProducto } from '@/services/Products';
 
 const IconSelectionScreen: React.FC = () => {
-  const [productName, setProductName] = React.useState('');
-  const [category, setCategory] = React.useState('');
-  const [supermarket, setSupermarket] = React.useState('');
-  const [price, setPrice] = React.useState('');
-  const [userList, setUserList] = React.useState('');
-  const [selectedIcon, setSelectedIcon] = React.useState<string | null>(null);
+  const [productName, setProductName] = useState('');
+  const [category, setCategory] = useState('');
+  const [productimageURL, setProductImageURL] = useState('');
+  const [price, setPrice] = useState('');
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
 
-  const handleAddProduct = () => {
-    console.log('Product Info:', { productName, category, supermarket, price, userList, selectedIcon }); // Log the product info
+  // Carga las categorías desde Firebase al montar el componente
+  useEffect(() => {
+    const loadCategories = async () => {
+      const categoryList = await getCategorys();
+      setCategories(categoryList);
+    };
+    loadCategories();
+  }, []);
 
-    // Validate if all fields are filled
-    if (!productName || !category || !supermarket || !price || !userList || !selectedIcon) {
-      alert('Faltan datos. Por favor, completa todos los campos antes de agregar el producto.');
-    } else {
-      console.log('Producto agregado:', { productName, category, supermarket, price, userList, selectedIcon });
+  // Manejador para agregar el producto
+  const handleAddProduct = async () => {
+    console.log('Product Info:', { productName, productimageURL, price, selectedIcon });
 
-      // Show a success alert
-      alert('¡Agregado a tus productos!');
-      
-      // Optionally, clear the form after adding the product
+    if (!productName || !selectedIcon || !productimageURL || !price) {
+      Alert.alert('Error', 'Faltan datos. Por favor, completa todos los campos antes de agregar el producto.');
+      return;
+    }
+
+    try {
+      await addProducto(productName, category, productimageURL, parseFloat(price));
+      Alert.alert('Éxito', '¡Producto agregado exitosamente!');
+
+      // Limpia los campos del formulario después de agregar el producto
       setProductName('');
       setCategory('');
-      setSupermarket('');
       setPrice('');
-      setUserList('');
+      setProductImageURL('');
       setSelectedIcon(null);
+    } catch (error) {
+      console.error('Error al agregar el producto:', error);
+      Alert.alert('Error', 'Hubo un problema al agregar el producto. Inténtalo de nuevo.');
     }
   };
 
@@ -35,35 +50,31 @@ const IconSelectionScreen: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Escoge un ícono</Text>
 
-      {/* Icon Selection */}
-      <View style={styles.iconContainer}>
-        <TouchableOpacity 
-          style={[styles.iconCircle, selectedIcon === 'vegetable' && styles.selectedIcon]} // Apply style if selected
-          onPress={() => setSelectedIcon('vegetable')}
-        >
-          <Image source={{ uri: 'http://clipartmag.com/images/animated-vegetables-cliparts-37.jpg' }} style={styles.iconImage} />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.iconCircle, selectedIcon === 'dairy' && styles.selectedIcon]} // Apply style if selected
-          onPress={() => setSelectedIcon('dairy')}
-        >
-          <Image source={{ uri: 'https://static.vecteezy.com/system/resources/previews/014/151/429/original/milk-cheese-and-yogurt-icon-cartoon-style-vector.jpg' }} style={styles.iconImage} />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.iconCircle, selectedIcon === 'meat' && styles.selectedIcon]} // Apply style if selected
-          onPress={() => setSelectedIcon('meat')}
-        >
-          <Image source={{ uri: 'https://img.freepik.com/vector-gratis/ilustracion-dibujos-animados-carne-dibujada-mano_23-2150610000.jpg' }} style={styles.iconImage} />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.iconCircle, selectedIcon === 'hygiene' && styles.selectedIcon]} // Apply style if selected
-          onPress={() => setSelectedIcon('hygiene')}
-        >
-          <Image source={{ uri: 'https://img.freepik.com/vector-premium/productos-higiene-personal-caras-lindas-mascara-medica-desinfectante-proteger-contra-conjunto-ilustraciones-dibujos-animados-virus-o-coronavirus-divertido-jabon-animado-botella-champu-concepto-bano_74855-24969.jpg?w=2000' }} style={styles.iconImage} />
-        </TouchableOpacity>
-      </View>
+      {/* Selección de íconos */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scrollContainer}>
+        <View style={styles.iconContainer}>
+          {categories.map((category) => (
+            <TouchableOpacity
+              key={category.nombre}
+              style={[styles.iconCircle, selectedIcon === category.nombre && styles.selectedIcon]}
+              onPress={() => {
+                if (selectedIcon !== category.nombre) {
+                  setSelectedIcon(category.nombre);
+                  setProductImageURL(category.iconURL);
+                  setCategory(category.nombre);
+                  console.log(category)
+                  console.log(productimageURL)
+                  console.log(selectedIcon)
+                }
+              }}
+            >
+              <Image source={{ uri: category.iconURL }} style={styles.iconImage} />
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
 
-      {/* Product Details Input Rectangle */}
+      {/* Detalles del producto */}
       <View style={styles.detailsContainer}>
         <TextInput
           style={styles.input}
@@ -73,31 +84,14 @@ const IconSelectionScreen: React.FC = () => {
         />
         <TextInput
           style={styles.input}
-          placeholder="Categoría"
-          value={category}
-          onChangeText={setCategory}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Supermercado"
-          value={supermarket}
-          onChangeText={setSupermarket}
-        />
-        <TextInput
-          style={styles.input}
           placeholder="Precio"
           value={price}
           onChangeText={setPrice}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Lista del usuario"
-          value={userList}
-          onChangeText={setUserList}
+          keyboardType="numeric"
         />
       </View>
 
-      {/* Add Product Button */}
+      {/* Botón para agregar producto */}
       <TouchableOpacity style={styles.addButton} onPress={handleAddProduct}>
         <Text style={styles.addButtonText}>Agregar Producto</Text>
       </TouchableOpacity>
@@ -135,6 +129,10 @@ const styles = StyleSheet.create({
   iconImage: {
     width: 40,
     height: 40,
+  },
+  scrollContainer: {
+    width: '100%',
+    marginBottom: 20,
   },
   selectedIcon: {
     borderColor: '#2E7D32',

@@ -4,33 +4,41 @@ import { doc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs,ge
 import { ProductoLista } from "../models/ProductsList";
 import { Producto } from "../models/Products";
 
-export async function addProducto(producto: Producto, productoId: string): Promise<void> {
-    await setDoc(doc(db, "Productos", productoId), producto.toFirestore());
-  }
+export async function addProducto(nombre: string, category: string, imagenURL: string, price: number): Promise<void> {
+  // Crear una nueva instancia de Producto
+  const producto = new Producto(null,nombre, category, price, imagenURL);
+
+  // Generar un ID único para el producto
+  const productoId = doc(collection(db, "productos")).id;
+
+  // Guardar el objeto en Firestore
+  await setDoc(doc(db, "productos", productoId), producto.toFirestore());
+}
   
   // Obtener todos los productos
   export async function getProductos(): Promise<Producto[]> {
-    const productosCollection = collection(db, "Productos");
+    const productosCollection = collection(db, "productos");
     const querySnapshot = await getDocs(productosCollection);
+    console.log(querySnapshot.docs.map(doc => Producto.fromFirestore(doc)))
     return querySnapshot.docs.map(doc => Producto.fromFirestore(doc));
   }
   
   // Obtener producto por ID
   export async function getProductoById(productoId: string): Promise<Producto | null> {
-    const docRef = doc(db, "Productos", productoId);
+    const docRef = doc(db, "productos", productoId);
     const docSnap = await getDoc(docRef);
     return docSnap.exists() ? Producto.fromFirestore(docSnap) : null;
   }
   
   // Modificar un producto
   export async function modifyProducto(productoId: string, updatedData: Partial<Producto>): Promise<void> {
-    const docRef = doc(db, "Productos", productoId);
+    const docRef = doc(db, "productos", productoId);
     await updateDoc(docRef, updatedData);
   }
   
   // Eliminar un producto
   export async function deleteProducto(productoId: string): Promise<void> {
-    await deleteDoc(doc(db, "Productos", productoId));
+    await deleteDoc(doc(db, "productos", productoId));
   }
 // Añadir un producto a una lista (con cantidad y número de productos)
 export async function addProductoToList(productoLista: ProductoLista, productoListaId: string, cantidad: number): Promise<void> {
