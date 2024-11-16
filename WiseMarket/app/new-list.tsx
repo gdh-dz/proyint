@@ -3,6 +3,8 @@ import { Alert, FlatList, Image, Modal, StyleSheet, Switch, Text, TextInput, Tou
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { getProductos } from '../services/Products'; // Asegúrate de colocar la ruta correcta al servicio
 import { Producto } from '@/models/Products';
+import { createList } from '@/services/lists';
+import { List } from '@/models/Lists';
 
 const CrearNuevaLista = () => {
   const [nombreLista, setNombreLista] = useState('');
@@ -11,9 +13,21 @@ const CrearNuevaLista = () => {
   const [presupuesto, setPresupuesto] = useState('');
   const [selectedIcon, setSelectedIcon] = useState(0);
   const [productos, setProductos] = useState<Producto[]>([]); // Estado para los productos
+  const [selectedProductos, setSelectedProductos] = useState<Producto[]>([]); // Estado para productos seleccionados
 
   const toggleSwitch = () => setIsShared(previousState => !previousState);
+  const toggleSelectProducto = (producto: Producto) => {
+    setSelectedProductos(prev =>
+      prev.some(p => p.id === producto.id)
+        ? prev.filter(p => p.id !== producto.id)
+        : [...prev, producto]
+    );
+  };
 
+  // Log para ver productos seleccionados después de cada actualización
+  useEffect(() => {
+    console.log("Productos seleccionados:", selectedProductos);
+  }, [selectedProductos]);
   // Función para obtener productos al montar el componente
   useEffect(() => {
     const fetchProductos = async () => {
@@ -29,14 +43,52 @@ const CrearNuevaLista = () => {
 
   // Renderizado de cada producto en la cuadrícula
   const renderProducto = ({ item }: { item: Producto }) => (
-    <View style={styles.iconWrapper}>
+    <TouchableOpacity style={styles.iconWrapper} onPress={() => toggleSelectProducto(item)}>
+      <View style={styles.checkboxContainer}>
+        <View style={selectedProductos.find(p => p.id === item.id) ? styles.checkboxSelected : styles.checkbox} />
+      </View>
       <Image
-        source={{ uri: item.imagenURL ?? '../../assets/images/favicon.png' }} // URL de imagen placeholder
+        source={{ uri: item.imagenURL ?? '../../assets/images/favicon.png' }}
         style={styles.icon}
       />
       <Text style={styles.iconLabel}>{item.nombre}</Text>
-    </View>
-  );
+    </TouchableOpacity>
+);
+const handleCreateList = async () => {
+  if (!nombreLista || !presupuesto) {
+    Alert.alert('Error', 'Por favor llena todos los campos requeridos.');
+    return;
+  }
+
+  try {
+    // Crear una nueva instancia de la clase List
+    const nuevaLista = new List(
+      null, // Deja el id como null para que Firestore lo genere
+      parseFloat(presupuesto),
+      new Date(),
+      nombreLista,
+      [], // usersInList se gestionará automáticamente en el servicio
+      [], // Puedes añadir categorías si es necesario
+      selectedProductos.length, // montoArticulos
+      0, // montoLista, ajusta si tienes lógica para calcularlo
+      isShared ? 'shared' : 'private', // status
+      0 // totalPrice, ajusta si tienes lógica para calcular precios
+    );
+    const productosSeleccionadosIds = selectedProductos
+    .map(producto => producto.id)
+    .filter((id): id is string => id !== undefined);
+        await createList(nuevaLista, productosSeleccionadosIds); // Pasar la instancia de List al servicio
+    
+    Alert.alert('Éxito', 'Lista creada exitosamente.');
+    setModalVisible(false);
+    setNombreLista('');
+    setPresupuesto('');
+    setSelectedProductos([]);
+  } catch (error) {
+    console.error("Error al crear la lista:", error);
+    Alert.alert('Error', 'Hubo un problema al crear la lista.');
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -113,7 +165,7 @@ const CrearNuevaLista = () => {
                   />
 
                   <TouchableOpacity style={styles.createButton}>
-                    <Text style={styles.createButtonText}>Crear lista</Text>
+                    <Text style={styles.createButtonText} onPress={handleCreateList}>Crear lista</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -156,6 +208,26 @@ const styles = StyleSheet.create({
   switchLabel: {
     fontSize: 16,
     marginHorizontal: 8,
+  },
+  checkboxContainer: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    zIndex: 1,
+  },
+  checkbox: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#ccc',
+    backgroundColor: 'white',
+  },
+  checkboxSelected: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#4CAF50',
   },
   activeLabel: {
     color: '#81b0ff',
