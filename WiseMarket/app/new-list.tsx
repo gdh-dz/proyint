@@ -104,14 +104,14 @@ const handleCreateList = async () => {
 
       <Text style={styles.label}>Lista compartida</Text>
       <View style={styles.switchContainer}>
-        <Text style={[styles.switchLabel, isShared && styles.activeLabel]}>Sí</Text>
+        <Text style={[styles.switchLabel, !isShared && styles.activeLabel]}>No</Text>
         <Switch
           trackColor={{ false: "#767577", true: "#81b0ff" }}
           thumbColor={isShared ? "#f5dd4b" : "#f4f3f4"}
           onValueChange={toggleSwitch}
           value={isShared}
         />
-        <Text style={[styles.switchLabel, !isShared && styles.activeLabel]}>No</Text>
+        <Text style={[styles.switchLabel, isShared && styles.activeLabel]}>Sí</Text>
       </View>
 
       {/* FlatList para mostrar productos en cuadrícula */}
