@@ -1,12 +1,12 @@
 // services/ListService.tsx
 import {db} from "../firebaseConfig"; // Asegúrate de ajustar la ruta
-import { doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs, arrayUnion } from "firebase/firestore";
+import { doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs, arrayUnion, addDoc } from "firebase/firestore";
 import { List } from "../models/Lists";
 
 
 // Función para obtener una lista por su ID
 export async function getListById(listId: string): Promise<List | null> {
-  const docRef = doc(db, "Lista", listId);
+  const docRef = doc(db, "Listas", listId);
   const docSnap = await getDoc(docRef);
   return docSnap.exists() ? List.fromFirestore(docSnap) : null;
 }
@@ -14,7 +14,7 @@ export async function getListById(listId: string): Promise<List | null> {
 
 // Obtener usuarios asociados a una lista específica
 export async function getUsersInList(listId: string): Promise<any[]> {
-  const listDocRef = doc(db, "Lista", listId);
+  const listDocRef = doc(db, "Listas", listId);
   const listSnap = await getDoc(listDocRef);
   
   if (listSnap.exists()) {
@@ -25,22 +25,33 @@ export async function getUsersInList(listId: string): Promise<any[]> {
 }
 
 // Añadir un usuario a una lista específica
-export async function addUserToList(listId: string, userId: string): Promise<void> {
-  const listDocRef = doc(db, "Lista", listId);
-  await updateDoc(listDocRef, {
-    usersInList: arrayUnion(userId)
-  });
+export async function addUserToList(listId: string, userId: string): Promise<boolean> {
+  const listDocRef = doc(db, "Listas", listId);
+  
+  try {
+    // Actualiza el documento de la lista añadiendo al usuario
+    await updateDoc(listDocRef, {
+      usersInList: arrayUnion(userId),  // 'arrayUnion' asegura que el usuario no se repita
+    });
+
+    // Si todo sale bien, se retorna 'true' para indicar éxito
+    return true;
+  } catch (error) {
+    // Manejo de errores en caso de que falle la operación
+    console.error("Error al agregar el usuario a la lista:", error);
+    return false;
+  }
 }
 
 // Obtener listas a las que está asociado un usuario específico
 export async function getListsByUserId(userId: string): Promise<List[]> {
-  const listsQuery = query(collection(db, "Lista"), where("usersInList", "array-contains", userId));
+  const listsQuery = query(collection(db, "Listas"), where("usersInList", "array-contains", userId));
   const querySnapshot = await getDocs(listsQuery);
   return querySnapshot.docs.map(doc => List.fromFirestore(doc));
 }
 // Obtener solo listas donde el usuario está solo en esa lista
 export async function getIndividualListsByUserId(userId: string): Promise<List[]> {
-  const listsQuery = query(collection(db, "Lista"), where("usersInList", "array-contains", userId));
+  const listsQuery = query(collection(db, "Listas"), where("usersInList", "array-contains", userId));
   const querySnapshot = await getDocs(listsQuery);
   
   const individualLists: List[] = [];
@@ -57,7 +68,8 @@ export async function getIndividualListsByUserId(userId: string): Promise<List[]
 }
 
 export async function getCollaborativeListsByUserId(userId: string): Promise<List[]> {
-  const listsQuery = query(collection(db, "Lista"), where("usersInList", "array-contains", userId));
+  const listsQuery = query(collection(db, "Listas"), where("usersInList", "array-contains", userId));
+  console.log(listsQuery)
   const querySnapshot = await getDocs(listsQuery);
   
   const collaborativeLists: List[] = [];
@@ -90,21 +102,25 @@ export async function getProductsbyListID(listId: string): Promise<any[]> {
 
 // Crear una nueva lista
 import { getUserIdFromSession } from "../services/auth"; // Asegúrate de importar la función para obtener el userId
+import { ProductoLista } from "@/models/ProductsList";
 
-export async function createList(list: List, listId: string): Promise<void> {
+// Función para crear una lista
+export async function createList(list: List, productos: string[]): Promise<void> {
   try {
     // Obtener el userId del usuario logueado
     const userId = await getUserIdFromSession();
     
-    // Si no hay un usuario logueado, no se puede crear la lista
     if (!userId) {
       throw new Error("No user is logged in.");
     }
+
+    // Crear un nuevo objeto de lista, añadiendo el userId al array usersInList
     const listWithUser = new List(
+      null,
       list.budget,
       list.creationDate,
       list.listName,
-      [userId, ...(list.usersInList || [])],  // Añadir el userId al array usersInList
+      [userId, ...(list.usersInList || [])],
       list.categories,
       list.montoArticulos,
       list.montoLista,
@@ -112,23 +128,42 @@ export async function createList(list: List, listId: string): Promise<void> {
       list.totalPrice
     );
 
-    // Crear la lista en la base de datos
-    await setDoc(doc(db, "Lista", listId), listWithUser.toFirestore());
+    // Crear la lista en Firestore
+    const docRef = await addDoc(collection(db, "Listas"), listWithUser.toFirestore());
+    const listaId = docRef.id;
 
+    console.log("Lista creada con ID:", listaId);
+
+    // Crear objetos ProductoLista por cada producto seleccionado
+    for (const productoId of productos) {
+      const nuevoProductoLista = new ProductoLista(
+        productoId, // ID del producto
+        1, // Cantidad inicial
+        listaId, // ID de la lista a la que pertenece el producto
+        false, // No comprado inicialmente
+        null, // Usuario asignado nulo por defecto
+        new Date() // Fecha de actualización actual
+      );
+
+      await addDoc(collection(db, "ProductosListas"), nuevoProductoLista.toFirestore());
+    }
+
+    console.log("Productos asociados a la lista creados exitosamente.");
   } catch (error) {
-    console.error("Error creating list: ", error);
+    console.error("Error creando la lista y sus productos:", error);
     throw error;
   }
 }
 
 
+
 // Eliminar una lista
 export async function deleteList(listId: string): Promise<void> {
-  await deleteDoc(doc(db, "Lista", listId));
+  await deleteDoc(doc(db, "Listas", listId));
 }
 
 // Modificar una lista existente
 export async function modifyList(listId: string, updatedData: Partial<List>): Promise<void> {
-  const docRef = doc(db, "Lista", listId);
+  const docRef = doc(db, "Listas", listId);
   await updateDoc(docRef, updatedData);
 }

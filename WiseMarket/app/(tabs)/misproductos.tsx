@@ -1,11 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { getProductos } from '@/services/Products';
+import { Producto } from '@/models/Products';
+
+
+  
 
 const ProductScreen: React.FC = () => {
   const router = useRouter();
-  const products = Array(15).fill({ name: 'Producto', imageUrl: 'https://via.placeholder.com/60' });
+  const [productos, setProductos] = useState<Producto[]>([]); // Estado para los productos
+
+  useEffect(() => {
+    const fetchProductos = async () => {
+      try {
+        const productosData = await getProductos();
+        setProductos(productosData);
+      } catch (error) {
+        console.error("Error al obtener productos:", error);
+      }
+    };
+    fetchProductos();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -22,10 +39,10 @@ const ProductScreen: React.FC = () => {
       {/* Product List */}
       <Text style={styles.sectionTitle}>Tus productos</Text>
       <ScrollView contentContainerStyle={styles.productsGrid}>
-        {products.map((product, index) => (
+        {productos.map((product, index) => (
           <View key={index} style={styles.productItem}>
-            <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
-            <Text style={styles.productName}>{product.name}</Text>
+            <Image source={{ uri: product.imagenURL ?? '../../assets/images/favicon.png' }} style={styles.productImage} />
+            <Text style={styles.productName}>{product.nombre}</Text>
           </View>
         ))}
       </ScrollView>
@@ -33,7 +50,7 @@ const ProductScreen: React.FC = () => {
       {/* Add New Product Button */}
       <TouchableOpacity 
         style={styles.newProductButton} 
-        onPress={() => router.push('/agregarproducto')} // Navigate to IconSelectionScreen
+        onPress={() => router.navigate('/agregarproducto')} // Navigate to IconSelectionScreen
       >
         <MaterialIcons name="add-circle-outline" size={48} color="#2E7D32" />
         <Text style={styles.newProductText}>Nuevo producto</Text>

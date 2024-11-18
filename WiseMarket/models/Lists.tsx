@@ -6,17 +6,19 @@ import { getFirestore } from "firebase/firestore";
 const db = getFirestore(app);
 
 export class List {
+  id?: string; // Propiedad opcional para almacenar el ID de la lista
   budget: number | null;
   creationDate: Date | null;
   listName: string | null;
   usersInList: string[] | null;
-  categories: string[] | null;  // Array de categorías relacionadas a esta lista
+  categories: string[] | null; // Array de categorías relacionadas a esta lista
   montoArticulos: number | null;
   montoLista: number | null;
   status: string | null;
   totalPrice: number | null;
 
   constructor(
+    id: string | null = null, // Agregar el id al constructor como opcional
     budget: number | null = null,
     creationDate: Date | null = null,
     listName: string | null = null,
@@ -27,6 +29,7 @@ export class List {
     status: string | null = null,
     totalPrice: number | null = null
   ) {
+    this.id = id ?? undefined;
     this.budget = budget;
     this.creationDate = creationDate;
     this.listName = listName;
@@ -65,6 +68,7 @@ export class List {
   static fromFirestore(snapshot: QueryDocumentSnapshot): List {
     const data = snapshot.data();
     return new List(
+      snapshot.id, // Asignar el ID del documento Firestore a la propiedad id
       data.budget ?? null,
       data.creationDate ? data.creationDate.toDate() : null,
       data.listName ?? null,

@@ -50,6 +50,7 @@ export default function TabLayout() {
           ),
         }}
       />
+      
       <Tabs.Screen
         name="ajustes"
         options={{
@@ -77,7 +78,27 @@ export default function TabLayout() {
                 ),
               }}
             />   
+        
+      <Tabs.Screen
+        name="confirmaciondecompartido"
+        options={{
+          title: 'Confirmacion del Producto',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'checkbox' : 'checkbox-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="scan"
+        options={{
+          title: 'scan ',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'camera' : 'camera-outline'} color={color} />
+          ),
+        }}
+      />
+
     </Tabs>
-      
+
   );
 }

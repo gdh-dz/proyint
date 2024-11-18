@@ -1,6 +1,10 @@
-import { useState } from 'react';
-import { Alert, Image, Modal, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, FlatList, Image, Modal, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { getProductos } from '../services/Products'; // Asegúrate de colocar la ruta correcta al servicio
+import { Producto } from '@/models/Products';
+import { createList } from '@/services/lists';
+import { List } from '@/models/Lists';
 
 const CrearNuevaLista = () => {
   const [nombreLista, setNombreLista] = useState('');
@@ -8,9 +12,83 @@ const CrearNuevaLista = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [presupuesto, setPresupuesto] = useState('');
   const [selectedIcon, setSelectedIcon] = useState(0);
-
+  const [productos, setProductos] = useState<Producto[]>([]); // Estado para los productos
+  const [selectedProductos, setSelectedProductos] = useState<Producto[]>([]); // Estado para productos seleccionados
 
   const toggleSwitch = () => setIsShared(previousState => !previousState);
+  const toggleSelectProducto = (producto: Producto) => {
+    setSelectedProductos(prev =>
+      prev.some(p => p.id === producto.id)
+        ? prev.filter(p => p.id !== producto.id)
+        : [...prev, producto]
+    );
+  };
+
+  // Log para ver productos seleccionados después de cada actualización
+  useEffect(() => {
+    console.log("Productos seleccionados:", selectedProductos);
+  }, [selectedProductos]);
+  // Función para obtener productos al montar el componente
+  useEffect(() => {
+    const fetchProductos = async () => {
+      try {
+        const productosData = await getProductos();
+        setProductos(productosData);
+      } catch (error) {
+        console.error("Error al obtener productos:", error);
+      }
+    };
+    fetchProductos();
+  }, []);
+
+  // Renderizado de cada producto en la cuadrícula
+  const renderProducto = ({ item }: { item: Producto }) => (
+    <TouchableOpacity style={styles.iconWrapper} onPress={() => toggleSelectProducto(item)}>
+      <View style={styles.checkboxContainer}>
+        <View style={selectedProductos.find(p => p.id === item.id) ? styles.checkboxSelected : styles.checkbox} />
+      </View>
+      <Image
+        source={{ uri: item.imagenURL ?? '../../assets/images/favicon.png' }}
+        style={styles.icon}
+      />
+      <Text style={styles.iconLabel}>{item.nombre}</Text>
+    </TouchableOpacity>
+);
+const handleCreateList = async () => {
+  if (!nombreLista || !presupuesto) {
+    Alert.alert('Error', 'Por favor llena todos los campos requeridos.');
+    return;
+  }
+
+  try {
+    // Crear una nueva instancia de la clase List
+    const nuevaLista = new List(
+      null, // Deja el id como null para que Firestore lo genere
+      parseFloat(presupuesto),
+      new Date(),
+      nombreLista,
+      [], // usersInList se gestionará automáticamente en el servicio
+      [], // Puedes añadir categorías si es necesario
+      selectedProductos.length, // montoArticulos
+      0, // montoLista, ajusta si tienes lógica para calcularlo
+      isShared ? 'shared' : 'private', // status
+      0 // totalPrice, ajusta si tienes lógica para calcular precios
+    );
+    const productosSeleccionadosIds = selectedProductos
+    .map(producto => producto.id)
+    .filter((id): id is string => id !== undefined);
+        await createList(nuevaLista, productosSeleccionadosIds); // Pasar la instancia de List al servicio
+    
+    Alert.alert('Éxito', 'Lista creada exitosamente.');
+    setModalVisible(false);
+    setNombreLista('');
+    setPresupuesto('');
+    setSelectedProductos([]);
+  } catch (error) {
+    console.error("Error al crear la lista:", error);
+    Alert.alert('Error', 'Hubo un problema al crear la lista.');
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -36,15 +114,14 @@ const CrearNuevaLista = () => {
         <Text style={[styles.switchLabel, !isShared && styles.activeLabel]}>No</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.iconContainer}>
-        {[...Array(12)].map((_, index) => (
-          <View key={index} style={styles.iconWrapper}>
-            <Image source={{ uri: '../../assets/images/favicon.png' }} style={styles.icon} />
-            <Text style={styles.iconLabel}>Producto</Text>
-          </View>
-        ))}
-      </ScrollView>
-
+      {/* FlatList para mostrar productos en cuadrícula */}
+      <FlatList
+        data={productos}
+        renderItem={renderProducto}
+        keyExtractor={(_, index) => index.toString()}
+        numColumns={4} // 4 columnas
+        contentContainerStyle={styles.iconContainer}
+      />
       <TouchableOpacity style={styles.addButton}>
         <Text style={styles.addButtonText}>Nuevo producto</Text>
       </TouchableOpacity>
@@ -76,20 +153,7 @@ const CrearNuevaLista = () => {
                   </TouchableOpacity>
 
                   <Text style={styles.label}>Escoge icono</Text>
-                  <ScrollView horizontal contentContainerStyle={styles.iconContainer}>
-                    {[...Array(6)].map((_, index) => (
-                      <TouchableOpacity 
-                        key={index} 
-                        style={[
-                          styles.iconButton, 
-                          selectedIcon === index && styles.iconButtonSelected
-                        ]}
-                        onPress={() => setSelectedIcon(index)}
-                      >
-                        <Text style={styles.iconText}>Lista {index + 1}</Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
+                  
                   
                   <Text style={styles.label}>Selecciona el presupuesto de la lista:</Text>
                   <TextInput
@@ -101,7 +165,7 @@ const CrearNuevaLista = () => {
                   />
 
                   <TouchableOpacity style={styles.createButton}>
-                    <Text style={styles.createButtonText}>Crear lista</Text>
+                    <Text style={styles.createButtonText} onPress={handleCreateList}>Crear lista</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -110,7 +174,6 @@ const CrearNuevaLista = () => {
           </Modal>
         </SafeAreaView>
       </SafeAreaProvider>
-      {/* End Modal View */}
     </View>
   );
 };
@@ -118,58 +181,74 @@ const CrearNuevaLista = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 16,
     backgroundColor: '#fff',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
+    marginBottom: 16,
   },
   label: {
     fontSize: 16,
-    color: '#6c757d',
-    marginVertical: 8,
+    marginBottom: 8,
   },
   input: {
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 8,
+    borderRadius: 4,
+    marginBottom: 16,
   },
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   switchLabel: {
     fontSize: 16,
-    color: '#6c757d',
-    marginHorizontal: 10,
+    marginHorizontal: 8,
+  },
+  checkboxContainer: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    zIndex: 1,
+  },
+  checkbox: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#ccc',
+    backgroundColor: 'white',
+  },
+  checkboxSelected: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#4CAF50',
   },
   activeLabel: {
-    color: '#4CAF50',
+    color: '#81b0ff',
   },
   iconContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    marginVertical: 20,
+    paddingBottom: 20,
   },
   iconWrapper: {
+    flex: 1,
     alignItems: 'center',
-    marginBottom: 10,
+    margin: 4,
+    maxWidth: '25%', // Ajuste para cada columna
   },
   icon: {
     width: 50,
     height: 50,
-    borderRadius: 25,
+    marginBottom: 4,
   },
   iconLabel: {
     fontSize: 12,
-    marginTop: 5,
+    textAlign: 'center',
   },
   addButton: {
     alignItems: 'center',
