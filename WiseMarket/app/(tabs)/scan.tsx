@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Image, StyleSheet, Text, View, Pressable, TextInput, ToastAndroid } from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { CameraView } from 'expo-camera';
 import { Camera } from 'expo-camera';
 import { router } from 'expo-router';
 import { getListById } from '@/services/lists';
@@ -82,20 +82,22 @@ const EscanearCodigo: React.FC = () => {
 
   return (
     <View style={styles.escanearCodigo}>
-     
+
       <View style={styles.escanearCodigoChild} />
       <Pressable style={styles.vector} onPress={() => router.back()}>
-       
+
       </Pressable>
       <Text style={styles.fotografaElCdigo}>Fotografía el código QR</Text>
 
       <View style={styles.roundedRectangle}>
-        {!isInputFocused && (
-          <BarCodeScanner
-            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-            style={StyleSheet.absoluteFillObject}
-          />
-        )}
+        <CameraView
+          barcodeScannerSettings={{
+            barcodeTypes: ["qr"],
+          }}
+          onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+          style={StyleSheet.absoluteFillObject}
+        />
+
       </View>
 
       <View style={styles.manualCodeContainer}>
