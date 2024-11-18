@@ -51,15 +51,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="homescreen"
-        options={{
-          title: 'Homescreen',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'menu' : 'menu-outline'} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="ajustes"
         options={{
           title: 'Ajustes',
@@ -85,8 +76,7 @@ export default function TabLayout() {
                   <TabBarIcon name={focused ? 'list' : 'list-outline'} color={color} />
                 ),
               }}
-            />
-                  
+            />   
     </Tabs>
       
   );
