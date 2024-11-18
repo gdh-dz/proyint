@@ -70,14 +70,15 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="detalledelproducto"
-        options={{
-          title: 'Detalle del Producto',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'list' : 'list-outline'} color={color} />
-          ),
-        }}
-      />
+              name="detalledelproducto"
+              options={{
+                title: 'Detalle del Producto',
+                tabBarIcon: ({ color, focused }) => (
+                  <TabBarIcon name={focused ? 'list' : 'list-outline'} color={color} />
+                ),
+              }}
+            />   
+        
       <Tabs.Screen
         name="confirmaciondecompartido"
         options={{
